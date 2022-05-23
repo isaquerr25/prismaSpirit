@@ -1,0 +1,47 @@
+mutation{
+  accountMetaTraderCreate(data:{
+    name:"pato"
+    password:"asd"
+    server:"asdasd"
+    balance:100000
+    balanceCredit:0
+    accountNumber:5156
+  }){
+    field
+    message
+  }
+}
+
+mutation{
+  accountMetaTraderUpdate(data:{
+    id:1
+    name:"ganço"
+    balance:500000
+  }){
+    field
+    message
+  }
+}
+
+query{
+  accountMetaTraderObjects{
+    id
+    name
+    server
+    balance
+    balanceCredit
+    accountNumber
+    status
+  }
+}
+
+
+mutation{
+  accountMetaTraderStopWork(data:{
+    id:1
+    status:WORK
+  }){
+    field
+    message
+  }
+}

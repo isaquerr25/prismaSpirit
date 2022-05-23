@@ -1,0 +1,18 @@
+query{
+  invoiceObjects{
+    valueDollar
+    valueReal
+    dollarQuote
+    percentProfit
+    percentFess
+    percentAffiliated
+    status
+    createdAt
+    paymenbeginDate
+    updatedAt
+    metaTraderRefr{
+      name
+      status
+    }
+  }
+}

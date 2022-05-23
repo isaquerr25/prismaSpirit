@@ -1,0 +1,94 @@
+mutation {
+	createUserResolver(
+		data: {
+			email: "testaaas25a@test.com"
+			password: "Teste25@"
+			name: "Jaison Manders"
+      numberTelephone:"5566999891"
+		}
+	) {
+		field
+		message
+	}
+}
+
+mutation {
+	loginAuthUser(data: { email: "testaaas25a@test.com", password: "Teste25@" }) {
+		field
+		message
+	}
+}
+
+mutation {
+	updateAuthPassword(
+		data: { oldPassword: "Teste25@", password: "Teste24@" }
+	) {
+		field
+		message
+	}
+}
+
+mutation {
+	updateWallet(data: { wallet: "16vmNcrA4Mvf7CaRLirAmpnjz1ZH3bWNkQ" }) {
+		field
+		message
+	}
+}
+
+mutation {
+	updateNumberTelephone(
+		data: {
+			numberTelephone:"569120993"
+		}
+	) {
+		field
+		message
+	}
+}
+
+
+query {
+	userInfoDocument {
+		email
+		name
+		wallet
+		valuePrice
+		document
+    numberTelephone
+	}
+}
+
+query {
+	userAllMoney {
+		balance
+		profitCycle
+		profitFuture
+	}
+}
+
+mutation {
+	logout
+}
+
+mutation {
+	resolverForgetPassword(
+		data: {
+			email:"est25ac@test.com"
+		}
+	) {
+		field
+		message
+	}
+}
+
+mutation {
+	newPassword(
+		data: {
+      token:""
+			password:""
+		}
+	) {
+		field
+		message
+	}
+}
