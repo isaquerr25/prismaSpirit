@@ -48,19 +48,27 @@ query{
 
 query{
   ordersFilterAccount(data:{
-    local:["default"]
+    local:["default","pato"]
   }){
+    id
   	name
     server
     accountNumber
     allCurrent
     allCopyCurrent
+    finishDate
+    status
+    typeAccount
     missingOrders{
+      id
+      ordersId
+      ticket
       par
       direction
       lote
       local
-      idOrigin
+      type
+      accountMetaTraderId
     }
   }
 }

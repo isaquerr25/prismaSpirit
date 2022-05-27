@@ -1,4 +1,4 @@
-import { InputDeleteOrdersAccounts } from './../dto/ordersAccount';
+import { InputDeleteOrdersAccounts, InputOrdersAccountGroupDefinition } from './../dto/ordersAccount';
 import { InputDeleteOrders, InputNewtOrders, InputUpdateOrders, ObjectOrders } from './../dto/orders';
 import { isUserAuth } from './../middleware/isUserAuth';
 import { Resolver, Query, Mutation, Arg, Ctx, UseMiddleware } from 'type-graphql';
@@ -91,7 +91,6 @@ export class OrdersAccountResolver {
 		}   
 
 		try {
-
 			await prisma.ordersAccount.create({ data });
 			progressInfo.push({
 				field: 'create',
@@ -165,4 +164,90 @@ export class OrdersAccountResolver {
 		return progressInfo;
 	}	
 	
+	@UseMiddleware(isManagerAuth)
+	@Mutation(() => [GraphState])
+	async ordersAccountGroupDefinition(@Arg('data', () => [InputOrdersAccountGroupDefinition]) 
+		data: InputNewtOrdersAccounts,
+		@Ctx() ctx: any	
+	) {
+		
+		const progressInfo = [{}];
+		if( data.par === undefined || 
+			data.direction === undefined || 
+			data.ticket === undefined || 
+			data.local === undefined || 
+			data.type === undefined || 
+			data.accountMetaTraderId === undefined || 
+			data.ordersId === undefined || 
+			data.lote === undefined 
+		){
+			if(data.accountMetaTraderId === undefined){
+				progressInfo.push({
+					field: 'accountMetaTraderId',
+					message: 'accountMetaTraderId is empty',
+				});
+			}
+			if(data.ordersId === undefined){
+				progressInfo.push({
+					field: 'ordersId',
+					message: 'ordersId is empty',
+				});
+			}
+			if(data.lote === undefined){
+				progressInfo.push({
+					field: 'lote',
+					message: 'lote is empty',
+				});
+			}
+			if(data.type === undefined){
+				progressInfo.push({
+					field: 'type',
+					message: 'type is empty',
+				});
+			}
+			if(data.local === undefined){
+				progressInfo.push({
+					field: 'local',
+					message: 'local is empty',
+				});
+			}
+			if(data.par === undefined){
+				progressInfo.push({
+					field: 'par',
+					message: 'par is empty',
+				});
+			}
+			if(data.direction === undefined){
+				progressInfo.push({
+					field: 'direction',
+					message: 'direction is empty',
+				});
+			}
+			if(data.ticket === undefined){
+				progressInfo.push({
+					field: 'ticket',
+					message: 'ticket is empty',
+				});
+			}
+			return progressInfo;
+		}   
+
+		try {
+			await prisma.ordersAccount.create({ data });
+			progressInfo.push({
+				field: 'create',
+				message: 'success',
+			});
+
+		} catch(error) {
+			console.log('bad :',error);
+			progressInfo.push({
+				field: 'create',
+				message: 'error',
+			});
+
+		}
+		return progressInfo;
+	}
+
 }

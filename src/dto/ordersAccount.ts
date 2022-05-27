@@ -51,6 +51,21 @@ export class InputNewtOrdersAccounts  {
 }
 
 @InputType()
+export class InputOrdersAccountGroupDefinition  {
+	@Field(() => Int, { nullable: true }) id?: number;
+	@Field(() => Int, { nullable: true }) ordersId?: number;
+	@Field(() => Int, { nullable: true }) ticket?: number;
+	@Field(() => String, { nullable: true }) par?: string;
+	@Field(() => OrdersDirectionEnum, { nullable: true }) direction?: OrdersDirectionEnum;
+	@Field(() => Int, { nullable: true }) lote?: number;
+	@Field(() => Int, { nullable: true }) accountMetaTraderId?: number;
+	@Field(() => String, { nullable: true }) local?: string;
+	@Field(() => OrdersTypeEnum, { nullable: true }) type?: OrdersTypeEnum;
+	@Field(() => OrdersStatusEnum, { nullable: true }) status?: OrdersStatusEnum;
+}
+
+
+@InputType()
 export class InputUpdateOrdersAccounts  {
     @Field(() => Int) id!: number;
 	@Field(() => String, { nullable: true }) par?: string;

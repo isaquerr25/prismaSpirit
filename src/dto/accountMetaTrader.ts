@@ -17,6 +17,8 @@ export class ObjectAccountMetaTrader  {
 		accountNumber?: number;
 	@Field(() => String, { nullable: true })
 		status?: string;
+	@Field(() => Date, { nullable: true })
+		finishDate?: Date;
 }
 
 
@@ -32,6 +34,8 @@ export class ObjectAccountFilterShort  {
 export class ObjectAccountFilterAccount  {
 	@Field(() => Int, { nullable: true })
 		id?: number;
+	@Field(() => Date, { nullable: true })
+		finishDate?: Date;
 	@Field(() => String, { nullable: true })
 		name?: string;
 	@Field(() => String, { nullable: true })
@@ -46,17 +50,27 @@ export class ObjectAccountFilterAccount  {
 		accountNumber?: number;
 	@Field(() => String, { nullable: true })
 		status?: string;
+	@Field(() => String, { nullable: true })
+		typeAccount?: string;
 	@Field(() => Int, { nullable: true })
 		allCurrent?: number;
 	@Field(() => Int, { nullable: true })
 		allCopyCurrent?: number;
+	@Field(() => [String], { nullable: true })
+		local?: string[];
 	@Field(() => [ObjectGroupSimpleOrder], { nullable: true })
-		missingOrders?: ObjectGroupSimpleOrder[];
+		missingOrders?: ObjectGroupSimpleOrder[] | null;
 }
 
 @ObjectType()
 export class ObjectGroupSimpleOrder  {
 
+	@Field(() => Int, { nullable: true })
+		ordersId?: number;
+	@Field(() => Int, { nullable: true })
+		id?: number;
+	@Field(() => Int, { nullable: true })
+		ticket?: number;
 	@Field(() => String, { nullable: true })
 		par?: string;
 	@Field(() => String, { nullable: true })
@@ -65,13 +79,12 @@ export class ObjectGroupSimpleOrder  {
 		lote?: number;
 	@Field(() => String, { nullable: true })
 		local?: string;
-	@Field(() => Int, { nullable: true })
-		idOrigin?: number;
+	
 	@Field(() => String, { nullable: true })
 		type?: string;
 	@Field(() => Int, { nullable: true })
 		accountMetaTraderId?: number;	
-		
+	
 		
 }
 

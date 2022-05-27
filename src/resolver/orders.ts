@@ -151,35 +151,11 @@ export class OrdersResolver {
 	@Query(() => [ObjectAccountFilterAccount], { nullable: true })
 	async ordersFilterAccount( @Arg('data') data: ObjectFilterAccountOrders) {
 		
-		const completeToSend: { 
-				allCurrent: number;
-				allCopyCurrent: number;
-				missingOrders: { par: any;
-					direction: any;
-					lote: number;
-					local: any;
-					idOrigin: any;
-				}[];
-				id: number;
-				name: string;
-				password: string;
-				server: string;
-				balance: number; 
-				balanceCredit: number; 
-				accountNumber: number; 
-				status: AccountMetaTraderEnum; 
-				createdAt: Date; 
-				updatedAt: Date; 
-				finishDate: Date | null; 
-				userId: number; 
-				typeAccount: AccountMetaTraderTypeEnum; 
-				local: string[]; 
-				accountType: accountTypeEnum; 
-				OrdersAccount: OrdersAccount[]; 
-			}[] =[]; 
+		const completeToSend: any =[]; 
 			
 		for(const res of data.local){
-			
+
+
 			const allOrdersOpen =  await prisma.orders.findMany({where:{local:res,status:'OPEN',type:'NORMAL'}});
 			
 			const idOriginalOrder =  allOrdersOpen.map((index)=>{
@@ -188,12 +164,21 @@ export class OrdersResolver {
 
 			const allAccounts =  await prisma.accountMetaTrader.findMany({	
 				where:{
-					local:{ has : res},
+					
+					local:{ has : res },
+				
+					finishDate:{gte:new Date()},		
+
 				},
 				include:{OrdersAccount:true}
-			});
+			});	
 			//work all open orders 
-			const calculateLostOrdersOpen =  allAccounts.map(async (index)=>{
+
+
+			
+
+
+			const calculateLostOrdersOpen = allAccounts.map(async (index)=>{
 				
 
 				return{
@@ -213,51 +198,64 @@ export class OrdersResolver {
 				};
 
 			});
-			await Promise.all(calculateLostOrdersOpen).then(function(results) {
-				completeToSend.push(...results);
-			});
+
+
+			(completeToSend.push(...(await Promise.all(calculateLostOrdersOpen))));
+			
+
 
 			const allOrdersClose =  await prisma.orders.findMany({where:{
 				local:res,
 				status:'CLOSE',
-				type:'NORMAL'},
-			include:{OrdersAccount:true}
+			},
+			include:{OrdersAccount:{include:{refAccount:true}},},
 			});
+			const orderDestruct = (allOrdersClose.filter(({OrdersAccount}) => OrdersAccount.length !== 0));
 			
-			const orderModify = ...(allOrdersClose.map(({OrdersAccount}) => OrdersAccount));
-			console.log(...orderModify);
-
-			
-			const calculateLostOrdersClose =  allAccounts.map(async (index)=>{
-				map({
-					par:groupOriginalOrder[i].par,
-					direction:groupOriginalOrder[i].direction,
-					lote: Math.trunc(sumOrders),
-					local:groupOriginalOrder[i].local,
-					idOrigin:groupOriginalOrder[i].id,
-					status:groupOriginalOrder[i].status,
-					type:groupOriginalOrder[i].type,
-					accountMetaTraderId:accountId,
-				})
-
-				return{
-					...index,
-					allCurrent : index.OrdersAccount.length,
-					allCopyCurrent : allOrdersClose.length,
-					missingOrders: allOrdersClose.filter(orders => orders.);
-				};
-
+			const calculateLostOrdersClose =  orderDestruct.map( async ({OrdersAccount})=>{
+				
+				return	OrdersAccount.map((props) =>{ 
+					return{
+						...props.refAccount,
+						missingOrders:[{
+							...props,
+							status:'CLOSE'}] 
+						
+					};
+				});			
 			});
 
 			await Promise.all(calculateLostOrdersClose).then(function(results) {
-				completeToSend.push(...results);
+				const consumer = (results.flat());
+				completeToSend.push(...consumer);
 			});
 
 		}
+		console.log('----000000------');
 
+		completeToSend.sort((a: { id: number; }, b: { id: any; }) => a.id - (b.id));
+		
+		for(let i = completeToSend.length-1; i >= 0; i-- ) {
+			console.log(completeToSend[i].missingOrders.length);
+			if(completeToSend[i].missingOrders.length !== 0){
+
+				for(let j = completeToSend.length-1; j >= 0; j-- ) {
+					if(completeToSend[i].id === completeToSend[j].id && i != j) {
+						completeToSend[j].missingOrders.push(...completeToSend[i].missingOrders);
+						completeToSend.splice(i,1);
+						break;
+					}
+				}
+			}else{
+				console.log('entro');
+				completeToSend.splice(i,1);
+			}
+		}
+		
+		
 		console.log('--------------------------------------------------------------');
-		completeToSend.sort((a, b) => a.accountNumber - (b.accountNumber));
-
+		console.log(completeToSend);
+		
 		return completeToSend;
 	}
 }
@@ -323,7 +321,7 @@ const calculateOrders = async (statusOrder:statusOrder,
 				direction:groupOriginalOrder[i].direction,
 				lote: Math.trunc(sumOrders),
 				local:groupOriginalOrder[i].local,
-				idOrigin:groupOriginalOrder[i].id,
+				ordersId:groupOriginalOrder[i].id,
 				status:groupOriginalOrder[i].status,
 				type:groupOriginalOrder[i].type,
 				accountMetaTraderId:accountId,
