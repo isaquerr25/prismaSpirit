@@ -1,4 +1,4 @@
-import { AccountMetaTraderEnum } from '@prisma/client';
+import { AccountMetaTraderEnum, OrdersDirectionEnum, OrdersTypeEnum, OrdersStatusEnum } from '@prisma/client';
 import { ObjectType, Field, InputType, Int, registerEnumType} from 'type-graphql';
 
 @ObjectType()
@@ -73,26 +73,57 @@ export class ObjectGroupSimpleOrder  {
 		ticket?: number;
 	@Field(() => String, { nullable: true })
 		par?: string;
-	@Field(() => String, { nullable: true })
-		direction?: string;
+	@Field(() => OrdersDirectionEnum, { nullable: true })
+		direction?: OrdersDirectionEnum;
 	@Field(() => Int, { nullable: true })
 		lote?: number;
 	@Field(() => String, { nullable: true })
 		local?: string;
-	
-	@Field(() => String, { nullable: true })
-		type?: string;
+	@Field(() => OrdersStatusEnum, { nullable: true })
+		status?: OrdersStatusEnum;
+	@Field(() => OrdersTypeEnum, { nullable: true })
+		type?: OrdersTypeEnum;
 	@Field(() => Int, { nullable: true })
-		accountMetaTraderId?: number;	
-	
-		
+		accountMetaTraderId?: number;			
 }
 
+@InputType()
+export class InputOrdersAccountGroupDefinition  {
 
+	@Field(() => Int, { nullable: true })
+		ordersId?: number;
+	@Field(() => Int, { nullable: true })
+		id?: number;
+	@Field(() => Int, { nullable: true })
+		ticket?: number;
+	@Field(() => String, { nullable: true })
+		par?: string;
+	@Field(() => OrdersDirectionEnum, { nullable: true })
+		direction?: OrdersDirectionEnum;
+	@Field(() => Int, { nullable: true })
+		lote?: number;
+	@Field(() => String, { nullable: true })
+		local?: string;
+	@Field(() => OrdersStatusEnum, { nullable: true })
+		status?: OrdersStatusEnum;
+	@Field(() => OrdersTypeEnum, { nullable: true })
+		type?: OrdersTypeEnum;
+	@Field(() => Int, { nullable: true })
+		accountMetaTraderId?: number;			
+}
+
+registerEnumType(OrdersStatusEnum, {
+	name: 'OrdersStatusEnum',
+});
+registerEnumType(OrdersTypeEnum, {
+	name: 'OrdersTypeEnum',
+});
+registerEnumType(OrdersDirectionEnum, {
+	name: 'OrdersDirectionEnum',
+});
 registerEnumType(AccountMetaTraderEnum, {
 	name: 'AccountMetaTraderEnum',
 });
-
 
 @InputType()
 export class InputNewAccountMetaTrader {

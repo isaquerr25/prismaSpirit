@@ -165,6 +165,8 @@ model OrdersAccount {
   accountMetaTraderId Int
   refOriginalOrder    Orders              @relation(fields: [ordersId], references: [id])
   ordersId            Int
+  takeProfit          String?
+  stopLoss            String?
 }
 
 enum OrdersDirectionEnum {
@@ -184,6 +186,8 @@ model Orders {
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt
   OrdersAccount OrdersAccount[]
+  takeProfit    String?            
+  stopLoss      String?
 }
 
 enum LoteAutoCalculateDangerEnum {
