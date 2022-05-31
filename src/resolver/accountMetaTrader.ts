@@ -241,7 +241,7 @@ export class AccountMetaTraderResolver {
 				local:res,
 				status:'CLOSE',
 			},
-			include:{OrdersAccount:{include:{refAccount:true}},},
+			include:{OrdersAccount:{include:{refAccount:true},where:{NOT:{status:'CLOSE'}}},},
 			});
 			const orderDestruct = (allOrdersClose.filter(({OrdersAccount}) => OrdersAccount.length !== 0));
 			
