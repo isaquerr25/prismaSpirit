@@ -1,4 +1,4 @@
-import { AccountMetaTraderEnum, OrdersDirectionEnum, OrdersTypeEnum, OrdersStatusEnum } from '@prisma/client';
+import { AccountMetaTraderEnum, OrdersDirectionEnum, OrdersTypeEnum, OrdersStatusEnum, AccountMetaTrader } from '@prisma/client';
 import { ObjectType, Field, InputType, Int, registerEnumType} from 'type-graphql';
 
 @ObjectType()
@@ -155,6 +155,18 @@ export class InputChangeAccountMetaTrader {
 		balance?: number;
 	@Field(() => Int,{ nullable: true })
 		balanceCredit?: number;
+}
+
+@InputType()
+export class InputAccountPython  {
+	@Field(() => Int)
+		id!: number;
+	@Field(() => Int,{ nullable: true })
+		balance!: number;
+	@Field(() => Int,{ nullable: true })
+		balanceCredit!: number;
+	@Field(() => AccountMetaTraderEnum, { nullable: true })
+		status?: AccountMetaTraderEnum;
 }
 
 

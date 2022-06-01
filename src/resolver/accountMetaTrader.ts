@@ -2,7 +2,7 @@ import { isUserAuth } from './../middleware/isUserAuth';
 import { Resolver, Query, Mutation, Arg, Ctx, UseMiddleware } from 'type-graphql';
 import { PrismaClient } from '@prisma/client';
 import { GraphState } from '../dto/utils';
-import { InputChangeAccountMetaTrader, InputDeleteAccountMetaTrader, InputNewAccountMetaTrader, InputStopWorkAccountMetaTrader, ObjectAccountFilterAccount, ObjectAccountMetaTrader } from '../dto/accountMetaTrader';
+import { InputAccountPython, InputChangeAccountMetaTrader, InputDeleteAccountMetaTrader, InputNewAccountMetaTrader, InputStopWorkAccountMetaTrader, ObjectAccountFilterAccount, ObjectAccountMetaTrader } from '../dto/accountMetaTrader';
 import { getTokenId } from '../utils';
 import { loteRangeInfluence } from './loteAutoCalculate';
 import { ObjectFilterAccountOrders } from '../dto/orders';
@@ -197,9 +197,12 @@ export class AccountMetaTraderResolver {
 
 			const allAccounts =  await prisma.accountMetaTrader.findMany({	
 				where:{
-					
+					OR:[
+						{status:'WORK'},
+						{AND:[{NOT:[{typeAccount:'GUEST'},{status:'ERROR_LOGIN'}]}]},
+					],
 					local:{ has : res },
-				
+					
 					finishDate:{gte:new Date()},		
 
 				},
@@ -241,7 +244,22 @@ export class AccountMetaTraderResolver {
 				local:res,
 				status:'CLOSE',
 			},
-			include:{OrdersAccount:{include:{refAccount:true},where:{NOT:{status:'CLOSE'}}},},
+			include:{
+				OrdersAccount:{
+					include:{refAccount:true},
+					where:{
+						NOT:{status:'CLOSE'},
+						refAccount:{
+							OR:[
+								{status:'WORK'},
+								{NOT:{typeAccount:'GUEST'}}
+							]
+						}}
+				}
+			}
+				//include:{OrdersAccount:{include:{refAccount:true},where:{NOT:{status:'CLOSE'}}},},
+			
+
 			});
 			const orderDestruct = (allOrdersClose.filter(({OrdersAccount}) => OrdersAccount.length !== 0));
 			
@@ -293,8 +311,24 @@ export class AccountMetaTraderResolver {
 	}
 
 
-	
+	@Mutation(() => GraphState, { nullable: true })
+	async accountUpdatePython(
+		@Arg('data', () => InputAccountPython) data: InputAccountPython
+	)
+	{
 
+		try {
+			await prisma.accountMetaTrader.update({
+				where: { id: data.id },
+				data: { ...data },
+			});
+			return { field: 'success', message: 'change Information' };
+		} catch (errors) {
+			return { field: 'update', message: errors };
+		}
+		
+		return { field: 'update', message: '404' };
+	}
 
 }
 

@@ -44,6 +44,7 @@ enum AccountMetaTraderEnum {
   PROCESS
   PAY_TO_ACTIVATE
   STOP
+  ERROR_LOGIN
 }
 
 enum AccountMetaTraderTypeEnum {
@@ -72,8 +73,8 @@ model AccountMetaTrader {
   userId        Int
   OrdersAccount OrdersAccount[]
   typeAccount   AccountMetaTraderTypeEnum @default(GUEST)
-  local         String[]    
-  accountType   accountTypeEnum            @default(NORMAL)
+  local         String[]
+  accountType   accountTypeEnum           @default(NORMAL)
 }
 
 enum accountTypeEnum {
@@ -186,7 +187,7 @@ model Orders {
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt
   OrdersAccount OrdersAccount[]
-  takeProfit    String?            
+  takeProfit    String?
   stopLoss      String?
 }
 

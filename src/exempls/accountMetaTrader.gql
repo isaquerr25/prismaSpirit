@@ -45,3 +45,13 @@ mutation{
     message
   }
 }
+
+mutation{
+  accountUpdatePython(data:{
+    id:2
+    status:WORK
+  }){
+    field
+    message
+  }
+}
