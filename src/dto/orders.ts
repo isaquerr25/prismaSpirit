@@ -64,7 +64,7 @@ export class InputDeleteOrders  {
 
 @InputType()
 export class ObjectFilterAccountOrders   {
-    @Field(() => [String]) local!: string;
+    @Field(() => [String]) local!: string[];
 }
 
 

@@ -185,61 +185,58 @@ export class AccountMetaTraderResolver {
 	async ordersFilterAccount( @Arg('data') data: ObjectFilterAccountOrders) {
 		
 		const completeToSend: any =[]; 
-			
+		
 		for(const res of data.local){
 
 
 			const allOrdersOpen =  await prisma.orders.findMany({where:{local:res,status:'OPEN',type:'NORMAL'}});
-			
-			const idOriginalOrder =  allOrdersOpen.map((index)=>{
-				return index.id;
-			});
-
-			const allAccounts =  await prisma.accountMetaTrader.findMany({	
-				where:{
-					OR:[
-						{status:'WORK'},
-						{AND:[{NOT:[{typeAccount:'GUEST'},{status:'ERROR_LOGIN'}]}]},
-					],
-					local:{ has : res },
-					
-					finishDate:{gte:new Date()},		
-
-				},
-				include:{OrdersAccount:true}
-			});	
-			//work all open orders 
-
-
-			
-
-
-			const calculateLostOrdersOpen = allAccounts.map(async (index)=>{
+			if(allOrdersOpen.length != 0){
 				
+				const idOriginalOrder =  allOrdersOpen.map((index)=>{
+					return index.id;
+				});
+	
+				const allAccounts =  await prisma.accountMetaTrader.findMany({	
+					where:{
+						OR:[
+							{status:'WORK'},
+							{AND:[{NOT:[{typeAccount:'GUEST'},{status:'ERROR_LOGIN'}]}]},
+						],
+						local:{ has : res },
+						
+						finishDate:{gte:new Date()},		
+	
+					},
+					include:{OrdersAccount:{where:{status:'OPEN'}} }
+				});	
+	
+				console.log('data.locssssssssssssal');
+				const calculateLostOrdersOpen = allAccounts.map(async (index)=>{
+					
+	
+					return{
+						...index,
+						allCurrent : index.OrdersAccount.length,
+						allCopyCurrent : allOrdersOpen.length,
+						missingOrders: await calculateOrders(
+							{
+								ordersTotal:3,	
+								ordersInAccount:index.OrdersAccount.length
+							},
+							allOrdersOpen,
+							index.OrdersAccount,
+							(index.balance + index.balanceCredit),
+							index.id
+						)
+					};
+	
+				});
+	
+				(completeToSend.push(...(await Promise.all(calculateLostOrdersOpen))));
+				
+			} 
 
-				return{
-					...index,
-					allCurrent : index.OrdersAccount.length,
-					allCopyCurrent : allOrdersOpen.length,
-					missingOrders: await calculateOrders(
-						{
-							ordersTotal:3,	
-							ordersInAccount:index.OrdersAccount.length
-						},
-						allOrdersOpen,
-						index.OrdersAccount,
-						(index.balance + index.balanceCredit),
-						index.id
-					)
-				};
-
-			});
-
-
-			(completeToSend.push(...(await Promise.all(calculateLostOrdersOpen))));
-			
-
-
+			console.log('data.local');
 			const allOrdersClose =  await prisma.orders.findMany({where:{
 				local:res,
 				status:'CLOSE',
@@ -261,28 +258,32 @@ export class AccountMetaTraderResolver {
 			
 
 			});
-			const orderDestruct = (allOrdersClose.filter(({OrdersAccount}) => OrdersAccount.length !== 0));
-			
-			const calculateLostOrdersClose =  orderDestruct.map( async ({OrdersAccount})=>{
-				
-				return	OrdersAccount.map((props) =>{ 
-					return{
-						...props.refAccount,
-						missingOrders:[{
-							...props,
-							status:'CLOSE'}] 
-						
-					};
-				});			
-			});
+			console.log('allOrdersOpen');
+			if(allOrdersClose.length !=0){
 
-			await Promise.all(calculateLostOrdersClose).then(function(results) {
-				const consumer = (results.flat());
-				completeToSend.push(...consumer);
-			});
+				const orderDestruct = (allOrdersClose.filter(({OrdersAccount}) => OrdersAccount.length !== 0));
+				
+				const calculateLostOrdersClose =  orderDestruct.map( async ({OrdersAccount})=>{
+					
+					return	OrdersAccount.map((props) =>{ 
+						return{
+							...props.refAccount,
+							missingOrders:[{
+								...props,
+								status:'CLOSE'}] 
+							
+						};
+					});			
+				});
+	
+				await Promise.all(calculateLostOrdersClose).then(function(results) {
+					const consumer = (results.flat());
+					completeToSend.push(...consumer);
+				});
+
+			}
 
 		}
-		console.log('----000000------');
 
 		completeToSend.sort((a: { id: number; }, b: { id: any; }) => a.id - (b.id));
 		
@@ -353,8 +354,10 @@ enum styleEnum {
 	MULTIPLY_1_5 = 1.5
   }
 
-const calculateOrders = async (statusOrder:statusOrder,
-	groupOriginalOrder:any,accountOrder:any,
+const calculateOrders = async (
+	statusOrder:statusOrder,
+	groupOriginalOrder:any,
+	accountOrder:any,
 	balance:number,
 	accountId:number
 ) =>{
@@ -365,13 +368,13 @@ const calculateOrders = async (statusOrder:statusOrder,
 	const idOriginalOrder =  accountOrder.map((index: { ordersId: number; })=>{
 		return index.ordersId;
 	});
-
+	console.log('groupOriginalOrder ----> ', groupOriginalOrder[0]);
 	const rangeWorkLot = await loteRangeInfluence(balance,groupOriginalOrder[0].local);
 	
-	let sumOrders = rangeWorkLot?.minLot ?? 10;
-
+	let sumOrders = rangeWorkLot?.minLot ?? 1;
 	if(accountOrder.length !=0){
-
+		
+		accountOrder.sort((a: { lote: number; }, b: { lote: any; }) => a.lote - (b.lote));
 		sumOrders = accountOrder[accountOrder.length-1].lote > sumOrders ? accountOrder[accountOrder.length-1].lote : sumOrders;
 		if(rangeWorkLot?.maxLot){
 			if((sumOrders * styleEnum[rangeWorkLot.styleMath]) <= rangeWorkLot?.maxLot){

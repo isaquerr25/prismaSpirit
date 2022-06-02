@@ -45,6 +45,7 @@ enum AccountMetaTraderEnum {
   PAY_TO_ACTIVATE
   STOP
   ERROR_LOGIN
+  NOT_HAVE_ORDER_NAME_LOCAL_REFERENCE
 }
 
 enum AccountMetaTraderTypeEnum {
