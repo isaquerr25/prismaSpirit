@@ -110,6 +110,7 @@ routes.use('/api/set_sinal', function(req,res, next) {
 routes.all('/api/set_sinal',jsonParser, async function (req, res) {
 	res.set('Access-Control-Allow-Origin', '*');
 	console.log('pato');
+	console.log(req);
 	console.log(req.body);
 	console.log(await req.body);
 	console.log(await req.body);
