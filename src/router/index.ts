@@ -102,10 +102,10 @@ routes.post('/post_email',jsonParser, async function (req, res) {
 });
 
 
-routes.all('/api/set_sinal',jsonParser, async function (req, res) {
+routes.post('/api/set_sinal',jsonParser, async function (req, res) {
 	console.log('pato');
-	console.log(req);
-	console.log(req.body);
+	console.log(await req);
+	console.log(await req.body);
 	console.log(await req.body);
 	console.log(await req.body);
 	return 'ducke';
