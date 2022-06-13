@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://tempest:vXtbfrlsDSzneWFheo0F@localhost:15432/spirit"
+  url      = "postgresql://tempest:vXtbfrlsDSzneWFheo0F@185.227.110.67:15432/spirit"
 }
 
 enum Role {

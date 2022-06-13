@@ -108,14 +108,13 @@ routes.use('/api/set_sinal', function(req,res, next) {
 
 });
 routes.all('/api/set_sinal',jsonParser, async function (req, res) {
-
 	res.set('Access-Control-Allow-Origin', '*');
 	console.log('pato');
 	console.log(req.body);
 	console.log(await req.body);
 	console.log(await req.body);
-	
 	return 'ducke';
+
 });
 
 routes.use('/userk/set_sinal', function(req,res, next) {
@@ -124,6 +123,7 @@ routes.use('/userk/set_sinal', function(req,res, next) {
 	next();
 
 });
+
 routes.all('/userk/set_sinal',jsonParser, async function (req, res) {
 
 	res.set('Access-Control-Allow-Origin', '*');
