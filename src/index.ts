@@ -80,7 +80,7 @@ const transporter = nodemailer.createTransport({
 	app.listen(process.env.DOOR, () => {
 		console.log(`
 		🚀  Server is running!
-		🔉  Listening on port 4000
+		🔉  Listening on port 4500
 	`);
 	});
 })();
