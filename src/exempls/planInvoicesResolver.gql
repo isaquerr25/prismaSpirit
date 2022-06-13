@@ -1,0 +1,30 @@
+mutation{
+  planInvoicesCreate(data:{
+    beginDate:"2020/05/01"
+    finishDate:"2020/05/31"
+    realDollarQuote:520
+    type:ALL
+  }){
+    field
+    message
+  }
+}
+
+
+
+mutation{
+  planInvoicesUpdate(data:{
+    id:1
+    grossProfitDollar:5
+    profitDollar:500
+    affiliatedProfitDollar:0
+    realDollarQuote:15000
+    status:COMPLETE
+  }){
+    field
+    message
+  }
+}
+
+
+

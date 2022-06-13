@@ -7,6 +7,7 @@ import { getTokenId } from '../utils';
 import { InputNewInvoices, ObjectInvoices } from '../dto/invoices';
 import { InputNewPlanInvoices, InputUpdatePlanInvoices, ObjectPlanInvoices } from '../dto/planInvoices';
 import { isManagerAuth } from '../middleware/isManagerAuth';
+import { ObjectFilterAccountOrders } from '../dto/orders';
 export const prisma = new PrismaClient();
 
 
@@ -98,4 +99,23 @@ export class PlanInvoicesResolver {
 		}
 		return progressInfo;
 	}
+
+
+
+	@Query(() => [ObjectPlanInvoices], { nullable: true })
+	async planInvoiceLocalPython( @Arg('data') data: ObjectFilterAccountOrders)  {
+
+		const plan = await prisma.planInvoices.findMany({
+			where:{
+				refenceAccount:{every:{}}
+			},
+			include:{
+				
+				refenceAccount:true
+				
+			}
+		});
+		return plan;
+	}
+	
 }

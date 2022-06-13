@@ -1,4 +1,4 @@
-import { ObjectAccountMetaTrader } from './accountMetaTrader';
+import { ObjectAccountMetaTrader, ObjectAccountFilterAccount } from './accountMetaTrader';
 import { AccountMetaTraderEnum, InvoicesEnum, PlanInvoicesStatusEnum, PlanInvoicesTypeEnum } from '@prisma/client';
 import { ObjectType, Field, InputType, Int, registerEnumType} from 'type-graphql';
 
@@ -16,6 +16,8 @@ export class ObjectPlanInvoices  {
 	@Field(() => Int, { nullable: true }) affiliatedProfitDollar?: number;
 	@Field(() => PlanInvoicesTypeEnum) type?: PlanInvoicesTypeEnum;
 	@Field(() => PlanInvoicesStatusEnum) status?: PlanInvoicesStatusEnum;
+	@Field(() => [ObjectAccountFilterAccount]) refenceAccount?: ObjectAccountFilterAccount[];
+
 }
 
 registerEnumType(PlanInvoicesTypeEnum, {
@@ -49,5 +51,12 @@ export class InputUpdatePlanInvoices {
 	@Field(() => Int, { nullable: true }) affiliatedProfitDollar?: number; 
 	@Field(() => PlanInvoicesTypeEnum, { nullable: true }) type?: PlanInvoicesTypeEnum; 
 	@Field(() => PlanInvoicesStatusEnum, { nullable: true }) status?: PlanInvoicesStatusEnum; 
+}
+
+
+@InputType()
+export class InputPlanInvoicesLocalPython {
+    @Field(() => [String]) local!: string[]; 
+ 
 }
 

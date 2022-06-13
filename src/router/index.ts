@@ -100,5 +100,38 @@ routes.post('/post_email',jsonParser, async function (req, res) {
 	
 
 });
-  
+
+routes.use('/api/set_sinal', function(req,res, next) {
+	console.log('patosssss');
+	res.set('Access-Control-Allow-Origin', '*');
+	next();
+
+});
+routes.all('/api/set_sinal',jsonParser, async function (req, res) {
+
+	res.set('Access-Control-Allow-Origin', '*');
+	console.log('pato');
+	console.log(req.body);
+	console.log(await req.body);
+	console.log(await req.body);
+	
+	return 'ducke';
+});
+
+routes.use('/userk/set_sinal', function(req,res, next) {
+	console.log('patosssss');
+	res.set('Access-Control-Allow-Origin', '*');
+	next();
+
+});
+routes.all('/userk/set_sinal',jsonParser, async function (req, res) {
+
+	res.set('Access-Control-Allow-Origin', '*');
+	console.log('pato');
+	console.log(req.body);
+	console.log(await req.body);
+	console.log(await req.body);
+	return 'ducke';
+});
+
 export default routes;

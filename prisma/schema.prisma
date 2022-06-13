@@ -76,6 +76,7 @@ model AccountMetaTrader {
   typeAccount   AccountMetaTraderTypeEnum @default(GUEST)
   local         String[]
   accountType   accountTypeEnum           @default(NORMAL)
+  PlanInvoices  PlanInvoices[]
 }
 
 enum accountTypeEnum {
@@ -109,6 +110,7 @@ model PlanInvoices {
   status                 PlanInvoicesStatusEnum @default(OPEN)
   createdAt              DateTime               @default(now())
   updatedAt              DateTime               @updatedAt
+  refenceAccount         AccountMetaTrader[]
 }
 
 enum InvoicesEnum {
