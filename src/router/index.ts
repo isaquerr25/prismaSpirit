@@ -10,6 +10,7 @@ import { prisma } from '../resolver/user';
 import axios from 'axios';
 import { emailRandom } from '../systemEmail';
 import bodyParser from 'body-parser';
+import { isArray, isBoolean, isNumber, isObject, isString } from 'class-validator';
 const v1 = express.Router();
 
 
@@ -101,13 +102,27 @@ routes.post('/post_email',jsonParser, async function (req, res) {
 
 });
 
-
-routes.post('/api/set_sinal',jsonParser, async function (req, res) {
+routes.post('/api/set_sinal', async function (req, res) {
 	console.log('pato');
-	console.log(await req);
-	console.log(await req.body);
-	console.log(await req.body);
-	console.log(await req.body);
+	console.log(isBoolean(await req.body));
+	console.log(isString(await req.body));
+	console.log(isNumber(await req.body));
+	console.log(isObject(await req.body));
+	console.log(isArray(await req.body));
+	console.log(JSON.stringify(await req.body));
+	console.log(req.headers);
+
+	// capture the encoded form data
+	req.on('data', (data) => {
+
+		//este funciona
+		console.log('111111  ',data.toString());
+
+
+	});
+
+
+	console.log('44444  ',(await req.body));
 	return 'ducke';
 
 });
