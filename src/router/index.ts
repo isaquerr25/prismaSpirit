@@ -11,6 +11,7 @@ import axios from 'axios';
 import { emailRandom } from '../systemEmail';
 import bodyParser from 'body-parser';
 import { isArray, isBoolean, isNumber, isObject, isString } from 'class-validator';
+import { OrdersResolver } from '../resolver/orders';
 const v1 = express.Router();
 
 
@@ -96,36 +97,127 @@ routes.post('/post_email',jsonParser, async function (req, res) {
 	console.log(await req.body);
 	const emailRandomD = await req.body;
 	const resume = await emailRandom(emailRandomD);
-	console.log(resume);
+	console.log(resume); 
 	res.send(resume);
 	
 
 });
 
+routes.use('/api/set_sinal', async function (req, res, next) {
+	
+	res.set('Access-Control-Allow-Origin', '*');
+	next();
+});
+
 routes.post('/api/set_sinal', async function (req, res) {
-	console.log('pato');
-	console.log(isBoolean(await req.body));
-	console.log(isString(await req.body));
-	console.log(isNumber(await req.body));
-	console.log(isObject(await req.body));
-	console.log(isArray(await req.body));
-	console.log(JSON.stringify(await req.body));
-	console.log(req.headers);
+	res.set('Access-Control-Allow-Origin', '*');
+	console.log('set_sinal');
 
 	// capture the encoded form data
-	req.on('data', (data) => {
+	req.on('data', async (data) => {
 
-		//este funciona
-		console.log('111111  ',data.toString());
+		//este funciona		
+		let adccc = ( await data.toString()).replace('{','').replace('}','').replace('"','').replace('\\x00','');
+		adccc = adccc.replace('{','');
+		adccc = adccc.replace('}','');
+		adccc = adccc.replace('"','');
+		adccc = adccc.replace('\'','');
+		adccc = adccc.replace(/"/g,'');
+		adccc = adccc.replace(/x00/,'');
+		adccc = adccc.replace('x00','');
+		console.log('origin ',adccc);
 
+		const foo = adccc.split(',').reduce(function(obj:any, str:string, index:number) {
+			const strParts = str.split(':');
+			if (strParts[0] && strParts[1]) { //<-- Make sure the key & value are not undefined
+				obj[strParts[0].replace(/\s+/g, '')] = strParts[1].trim(); //<-- Get rid of extra spaces at beginning of value strings
+			}
+			return obj;
+		}, {});
 
+		console.log(foo);
+		console.log(foo.ticket);
+		if(foo.status === 1){
+			console.log(foo.status);
+			console.log('error');
+			res.send({'status':'erro'});
+		}
+		else{
+
+			try {
+				await prisma.orders.create({ data:{
+					local:(foo.abertura),
+					par:(foo.par).replace('m',''),
+					status:'OPEN',
+					ticket: Number(foo.ticket),
+					lote:Number(foo.lots)*100,
+					direction: foo.direcao === 'buy' ?'BUY' : 'SELL',
+					type:foo.type === 'normal' ? 'NORMAL' : ( foo.type === 'auto' ? 'CORRECTION' : 'SPECIAL' ) ,
+				} });
+	
+				console.log('success ');
+				res.send({'status':'gravado'});
+	
+			} catch(error) {
+				console.log('bad :',error);
+				res.send({'status':'erro'});
+			}
+		}
 	});
-
-
-	console.log('44444  ',(await req.body));
-	return 'ducke';
-
 });
+
+routes.use('/api/auter_sinal', async function (req, res, next) {
+	res.set('Access-Control-Allow-Origin', '*');
+	next();
+});
+
+routes.post('/api/auter_sinal', async function (req, res) {
+	res.set('Access-Control-Allow-Origin', '*');
+	console.log('auter_sinal');
+
+	// capture the encoded form data
+	req.on('data', async (data) => {
+		
+		//este funciona		
+		let adccc = ( await data.toString()).replace('{','').replace('}','').replace('"','').replace('\\x00','');
+		adccc = adccc.replace('{','');
+		adccc = adccc.replace('}','');
+		adccc = adccc.replace('"','');
+		adccc = adccc.replace('\'','');
+		adccc = adccc.replace(/"/g,'');
+		adccc = adccc.replace(/x00/,'');
+		adccc = adccc.replace('x00','');
+		console.log('origin ',adccc);
+		
+		const foo = adccc.split(',').reduce(function(obj:any, str:string, index:number) {
+			const strParts = str.split(':');
+			if (strParts[0] && strParts[1]) { //<-- Make sure the key & value are not undefined
+				obj[strParts[0].replace(/\s+/g, '')] = strParts[1].trim(); //<-- Get rid of extra spaces at beginning of value strings
+			}
+			return obj;
+		}, {});
+
+		console.log(foo);
+		console.log(foo.ticket);
+		if(foo.status !== 'fechamento\x00'){
+			console.log(foo.status);
+			console.log('error');
+			res.send({'status':'error'});
+		}
+		try {
+			const ord = await prisma.orders.findFirst({where:{ticket:Number(foo.ticket)}});
+			await prisma.orders.update({ where:{id: ord!.id ?? 0}, data:{status:'CLOSE'} });
+
+			console.log('success ');
+			res.send({'status':'fechamento'});
+
+		} catch(error) {
+			console.log('bad :',error);
+			res.send({'status':'error'});
+		}
+	});
+});
+
 
 
 export default routes;

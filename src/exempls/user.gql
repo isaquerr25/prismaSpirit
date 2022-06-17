@@ -13,6 +13,21 @@ mutation {
 }
 
 mutation {
+	createUserResolver(
+		data: {
+			email: "admin25a@test.com"
+			password: "Teste25@"
+			name: "Jaison Manders"      
+		}
+	) {
+		field
+		message
+	}
+}
+
+
+
+mutation {
 	loginAuthUser(data: { email: "testaaas25a@test.com", password: "Teste25@" }) {
 		field
 		message

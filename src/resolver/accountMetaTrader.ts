@@ -189,7 +189,7 @@ export class AccountMetaTraderResolver {
 		for(const res of data.local){
 
 
-			const allOrdersOpen =  await prisma.orders.findMany({where:{local:res,status:'OPEN',type:'NORMAL'}});
+			const allOrdersOpen =  await prisma.orders.findMany({where:{local:res,status:'OPEN'}});
 			if(allOrdersOpen.length != 0){
 				
 				const idOriginalOrder =  allOrdersOpen.map((index)=>{
@@ -394,14 +394,14 @@ const calculateOrders = async (
 				
 				par:groupOriginalOrder[i].par,
 				direction:groupOriginalOrder[i].direction,
-				lote: Math.trunc(sumOrders),
+				lote: groupOriginalOrder[i].type == 'NORMAL' ? Math.trunc(sumOrders) : rangeWorkLot?.valueBase, 
 				local:groupOriginalOrder[i].local,
 				ordersId:groupOriginalOrder[i].id,
 				status:groupOriginalOrder[i].status,
 				type:groupOriginalOrder[i].type,
 				accountMetaTraderId:accountId,
 			});
-			if(rangeWorkLot?.maxLot){
+			if(rangeWorkLot?.maxLot &&  groupOriginalOrder[i].type == 'NORMAL' ){
 				if((sumOrders * styleEnum[rangeWorkLot.styleMath]) <= rangeWorkLot?.maxLot){
 					sumOrders = sumOrders * styleEnum[rangeWorkLot.styleMath];
 				}else{

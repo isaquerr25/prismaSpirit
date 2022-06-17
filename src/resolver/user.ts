@@ -97,7 +97,7 @@ export class UserResolver {
 		const haveEmail = await this.GetValidateEmail(data.email);
 		
 		if (haveEmail) {
-			if(haveEmail?.confirm != 'valid'){
+			if(haveEmail?.confirm != 'Valid'){
 				emailValidSend(haveEmail);
 				newValidateUser.push({
 					field: 'access',
