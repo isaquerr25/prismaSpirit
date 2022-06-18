@@ -168,6 +168,7 @@ export class AccountMetaTraderResolver {
 	@Ctx() ctx: any	) 
 	{
 		// NOTE Just delete if not have problem in invoices
+		// FIXME user deve apenas alterar sua conta 
 		try {
 			
 			await prisma.accountMetaTrader.update({
@@ -190,12 +191,10 @@ export class AccountMetaTraderResolver {
 
 
 			const allOrdersOpen =  await prisma.orders.findMany({where:{local:res,status:'OPEN'}});
+			console.log('allOrdersOpen = ',allOrdersOpen);
 			if(allOrdersOpen.length != 0){
 				
-				const idOriginalOrder =  allOrdersOpen.map((index)=>{
-					return index.id;
-				});
-	
+				
 				const allAccounts =  await prisma.accountMetaTrader.findMany({	
 					where:{
 						OR:[
@@ -207,10 +206,10 @@ export class AccountMetaTraderResolver {
 						finishDate:{gte:new Date()},		
 	
 					},
-					include:{OrdersAccount:{where:{status:'OPEN'}} }
+					include:{ OrdersAccount:{where:{status:'OPEN'}} }
 				});	
 	
-				console.log('data.locssssssssssssal');
+				console.log('allAccounts => ', allAccounts);
 				const calculateLostOrdersOpen = allAccounts.map(async (index)=>{
 					
 	
@@ -361,6 +360,7 @@ const calculateOrders = async (
 	balance:number,
 	accountId:number
 ) =>{
+	console.log('calculateOrders');
 	const result = [];
 	const yesterday = new Date();
 	yesterday.setDate(yesterday.getDate()-1);
@@ -368,7 +368,7 @@ const calculateOrders = async (
 	const idOriginalOrder =  accountOrder.map((index: { ordersId: number; })=>{
 		return index.ordersId;
 	});
-	console.log('groupOriginalOrder ----> ', groupOriginalOrder[0]);
+	console.log('groupOriginalOrder ----> ', groupOriginalOrder);
 	const rangeWorkLot = await loteRangeInfluence(balance,groupOriginalOrder[0].local);
 	
 	let sumOrders = rangeWorkLot?.minLot ?? 1;
