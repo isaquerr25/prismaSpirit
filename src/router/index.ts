@@ -143,8 +143,35 @@ routes.post('/api/set_sinal', async function (req, res) {
 			res.send({'status':'erro'});
 		}
 		else{
-
+			console.log(await prisma.orders.findFirst(
+				{where:
+					{
+						
+						ticket: Number(foo.ticket)
+						,local:foo.abertura
+						,par:foo.par
+						,lote:Number(foo.lots)*100
+						
+					}
+				}
+			));
 			try {
+				if(await prisma.orders.findFirst(
+					{where:
+						{
+							local:(foo.abertura),
+							par:(foo.par).replace('m',''),
+							status:'OPEN',
+							ticket: Number(foo.ticket),
+							lote:Number(foo.lots)*100,	
+							type:foo.type === 'normal' ? 'NORMAL' : ( foo.type === 'auto' ? 'CORRECTION' : 'SPECIAL' )
+						}
+					}
+				)){
+					console.log('jaTem');
+					res.send({'status':'jaTem'});
+					return;
+				}
 				await prisma.orders.create({ data:{
 					local:(foo.abertura),
 					par:(foo.par).replace('m',''),
