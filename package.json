@@ -57,12 +57,14 @@
 		"make-dir": "^3.1.0",
 		"multer": "^1.4.4",
 		"nodemailer": "^6.7.3",
+		"npm": "^8.12.1",
 		"prettier": "^2.5.1",
 		"reflect-metadata": "^0.1.13",
 		"shortid": "^2.2.16",
 		"ts-node-dev": "^1.1.8",
 		"type-graphql": "^1.1.1",
 		"upload": "^1.1.1",
+		"yarn": "^1.22.19",
 		"yup": "^0.32.11"
 	}
 }
