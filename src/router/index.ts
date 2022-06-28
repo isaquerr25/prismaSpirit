@@ -149,8 +149,8 @@ routes.post('/api/set_sinal', async function (req, res) {
 						
 						ticket: Number(foo.ticket)
 						,local:foo.abertura
-						,par:foo.par
-						,lote:Number(foo.lots)*100
+						,par:((foo.par).replace('micro','')).replace('m','')
+						,lote:Math.trunc(Number(foo.lots)*100)
 						
 					}
 				}
@@ -160,10 +160,10 @@ routes.post('/api/set_sinal', async function (req, res) {
 					{where:
 						{
 							local:(foo.abertura),
-							par:(foo.par).replace('m',''),
+							par:((foo.par).replace('micro','')).replace('m',''),
 							status:'OPEN',
 							ticket: Number(foo.ticket),
-							lote:Number(foo.lots)*100,	
+							lote:Math.trunc(Number(foo.lots)*100),	
 							type:foo.type === 'normal' ? 'NORMAL' : ( foo.type === 'auto' ? 'CORRECTION' : 'SPECIAL' )
 						}
 					}
@@ -174,10 +174,10 @@ routes.post('/api/set_sinal', async function (req, res) {
 				}
 				await prisma.orders.create({ data:{
 					local:(foo.abertura),
-					par:(foo.par).replace('m',''),
+					par:((foo.par).replace('micro','')).replace('m',''),
 					status:'OPEN',
 					ticket: Number(foo.ticket),
-					lote:Number(foo.lots)*100,
+					lote:Math.trunc(Number(foo.lots)*100),
 					direction: foo.direcao === 'buy' ?'BUY' : 'SELL',
 					type:foo.type === 'normal' ? 'NORMAL' : ( foo.type === 'auto' ? 'CORRECTION' : 'SPECIAL' ) ,
 				} });

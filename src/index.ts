@@ -26,8 +26,8 @@ const v1 = express.Router();
 /*         NOTE ativar novamente         */
 /* -------------------------------------------------------------------------- */
 
-serviceRoutine();
-
+//serviceRoutine();
+/*
 const transporter = nodemailer.createTransport({
 	service: 'Gmail',
 	auth: {
@@ -35,7 +35,7 @@ const transporter = nodemailer.createTransport({
 		pass: process.env.GMAIL_PASS,
 	},
 });
-
+*/
 (async () => {
 
 	const corsOptions = {
