@@ -107,3 +107,12 @@ mutation {
 		message
 	}
 }
+
+	mutation{
+	userValidAccount(data:{
+		token:"*******"
+	}){
+		field
+		message
+	}
+	}

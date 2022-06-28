@@ -1,5 +1,6 @@
 import { AccountMetaTraderEnum, OrdersDirectionEnum, OrdersTypeEnum, OrdersStatusEnum, AccountMetaTrader } from '@prisma/client';
 import { ObjectType, Field, InputType, Int, registerEnumType} from 'type-graphql';
+import { UserHaveComponents } from './user';
 
 @ObjectType()
 export class ObjectAccountMetaTrader  {
@@ -61,6 +62,40 @@ export class ObjectAccountFilterAccount  {
 	@Field(() => [ObjectGroupSimpleOrder], { nullable: true })
 		missingOrders?: ObjectGroupSimpleOrder[] | null;
 }
+
+
+
+@ObjectType()
+export class ObjectAccountFindToUser  {
+	@Field(() => Int, { nullable: true })
+		id?: number;
+	@Field(() => Date, { nullable: true })
+		finishDate?: Date;
+	@Field(() => String, { nullable: true })
+		name?: string;
+	@Field(() => String, { nullable: true })
+		server?: string;
+	@Field(() => Int, { nullable: true })
+		balance?: number;
+	@Field(() => Int, { nullable: true })
+		balanceCredit?: number;
+	@Field(() => Int, { nullable: true })
+		accountNumber?: number;
+	@Field(() => String, { nullable: true })
+		status?: string;
+	@Field(() => [ObjectGroupSimpleOrder], { nullable: true })
+		OrdersAccount?: ObjectGroupSimpleOrder[] | null;
+	@Field(() => UserHaveComponents, { nullable: true })	
+		user?: UserHaveComponents;
+}
+
+@InputType()
+export class InputAccountMetaTraderSingleFind{
+	@Field(() => Int)
+		id!: number;	
+	
+}
+
 
 @ObjectType()
 export class ObjectGroupSimpleOrder  {

@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { Resolver, Query, Mutation, Arg, Ctx, UseMiddleware } from 'type-graphql';
-import { GraphState } from '../dto/utils';
+import { GraphState, PassToken } from '../dto/utils';
 import { CreateUser, LoginUser, PasswordAlter, UserAll, UserCash, UserHaveComponents, WalletAlter, NumberTelephoneAlter, ForgetPasswordAlter, ForgetPasswordNewAlter } from '../dto/user';
 import { decodeTokenType, getTokenId, HashGenerator, validateCreateUser, validateLogin, validatePassword, validationNumberPhone } from '../utils';
 import { validate } from 'bitcoin-address-validation';
@@ -25,8 +25,6 @@ export class UserResolver {
 	async allUsers() {
 		return prisma.user.findMany();
 	}
-
-	
 
 	@Mutation(() => [GraphState])
 	async createUserResolver(@Arg('data', () => CreateUser) data: CreateUser) {
@@ -64,7 +62,7 @@ export class UserResolver {
 					field: 'create',
 					message: 'error',
 				});
-
+			
 			}
 
 		} else {
@@ -79,7 +77,6 @@ export class UserResolver {
 		return stateReturn;
 
 	}
-
 
 	GetValidateEmail(email: string) {
 		return prisma.user.findFirst({ where: { email } });
@@ -119,7 +116,7 @@ export class UserResolver {
 			if (coke) {
 				const { res } = ctx;
 
-				res.cookie('access-token', coke);
+				res.cookie('access-token', coke,{maxAge: 1000 * 60 * 60 * 24 * 7,});
 
 				newValidateUser.push({
 					field: 'success',
@@ -304,8 +301,18 @@ export class UserResolver {
 	async newPassword(@Arg('data', () => ForgetPasswordNewAlter) data: ForgetPasswordNewAlter)
 	{
 		let newValidateUser = {};
-
-		const currentToken = decodeTokenType(data.token).userId;
+		
+		console.log('currentToken ');
+		const decodeValid = decodeTokenType(data.token) ?? null;
+		if(decodeValid === null){
+			newValidateUser = {
+				field: 'error',
+				message: 'Token Invalid',
+			};
+			return newValidateUser;
+		}
+		const currentToken = decodeValid.userId;
+		console.log('currentToken ==> ', currentToken);
 		const newUser = await prisma.user.findFirst({
 			where: { id: currentToken },
 		});
@@ -326,6 +333,44 @@ export class UserResolver {
 			return { field: 'success', message: 'change password' };
 		} catch (errors) {
 			return { field: 'update', message: errors };
+		}
+	}
+
+
+
+
+	@Mutation(() => GraphState)
+	async userValidAccount(@Arg('data', () => PassToken) data: PassToken) {
+
+		
+		let newValidateUser = {};
+
+		const tokenOpen = decodeTokenType(data.token);
+
+		if (tokenOpen === null || tokenOpen.userId == null){
+			newValidateUser = {
+				field: 'error',
+				message: 'token invalid',
+			};
+			return newValidateUser;
+		}
+		try{
+
+			const newUser = await prisma.user.update({
+				where: { id: tokenOpen.userId },
+				data:{confirm:'Valid'}
+			});
+			newValidateUser = {
+				field: 'success',
+				message: 'account valid',
+			};
+			return newValidateUser;
+		}catch(error){
+			newValidateUser = {
+				field: 'error',
+				message: 'error alter status account',
+			};
+			return newValidateUser;
 		}
 	}
 }

@@ -16,3 +16,9 @@ export class DepositState {
 	@Field(() => String, { nullable: true })
 		message!: string;
 }
+
+@InputType()
+export class PassToken {
+	@Field(() => String)
+		token!: string;
+}

@@ -7,7 +7,7 @@ import sgMail from '@sendgrid/mail';
 const  emailValidSend = async(user:any) =>{
 
 	const token = createAuthToken(user.id,user.Enum);
-	const url = `https://www.tempestinvest.com/confirmation/${token}`;
+	const url = `${process.env.FRONT_IP!}/home/register/accountValid/sss?token=${token}`;
 	sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 	const msg = {
 		to: user.email, // Change to your recipient
@@ -27,7 +27,7 @@ const  emailValidSend = async(user:any) =>{
 export const  emailForgetPasswordSend = async(user:any) =>{
 
 	const token = createAuthToken(user.id,user.Enum);
-	const url = `https://www.tempestinvest.com/newPassword/${token}`;
+	const url = `${process.env.FRONT_IP!}/home/login/newPassword/sss?token=${token}`;
 	sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
 
 	const msg = {

@@ -98,3 +98,4 @@ export class ForgetPasswordNewAlter {
 	@Field(() => String)
 		password!: string;
 }
+

@@ -39,14 +39,14 @@ const transporter = nodemailer.createTransport({
 (async () => {
 
 	const corsOptions = {
-		origin: [`${process.env.FRONT_IP}`,
-			'http://localhost:4000/',
+		origin: [
+			'http://192.168.1.66:3000',
+			'http://192.168.1.66:3000/',
+			'http://localhost:3000',
 			'http://localhost:3000/',
-			'https://www.tempestinvest.com',
-			'https://tempestinvest.com',
-			'https://api.tempestinvest.com',
-			'https://api.tempestinvest.com/graphql',
-			`${process.env.IP}:${process.env.DOOR}`],
+			'http://localhost:4000/',
+			'http://localhost:4000/graphql/',
+		],
 		credentials: true,
 		optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 	};

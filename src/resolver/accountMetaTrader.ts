@@ -1,3 +1,4 @@
+import { ObjectAccountFindToUser, InputAccountMetaTraderSingleFind } from './../dto/accountMetaTrader';
 import { isUserAuth } from './../middleware/isUserAuth';
 import { Resolver, Query, Mutation, Arg, Ctx, UseMiddleware } from 'type-graphql';
 import { PrismaClient } from '@prisma/client';
@@ -19,7 +20,7 @@ export class AccountMetaTraderResolver {
 		@Ctx() ctx: any	
 	) {
 		
-		const progressInfo = [{}];
+		const progressInfo = [];
 		data.userId = getTokenId(ctx)?.userId; 
 		
 
@@ -27,6 +28,16 @@ export class AccountMetaTraderResolver {
 			progressInfo.push({
 				field: 'error',
 				message: 'this account not exists',
+			});
+			return progressInfo;
+		}
+		if (!await prisma.accountMetaTrader.findFirst({ where: { 
+			accountNumber: data.accountNumber , 
+			server: data.server} 
+		})) {
+			progressInfo.push({
+				field: 'error',
+				message: 'this account already registered',
 			});
 			return progressInfo;
 		}
@@ -81,8 +92,8 @@ export class AccountMetaTraderResolver {
 				local:'default'
 			} });
 			progressInfo.push({
-				field: 'create',
-				message: 'success',
+				field: 'success',
+				message: 'Account created successfully',
 			});
 
 		} catch(error) {
@@ -136,9 +147,27 @@ export class AccountMetaTraderResolver {
 	}
 
 	@UseMiddleware(isUserAuth)
+	@Query(() => ObjectAccountFindToUser, { nullable: true })
+	async accountMetaTraderSingleFind( 
+		@Arg('data') data: InputAccountMetaTraderSingleFind, 
+		@Ctx() ctx: any) {
+			
+		const value =  await prisma.accountMetaTrader.findFirst({
+			where:{
+				userId:getTokenId(ctx)?.userId,
+				id:data.id
+			},
+			include:{ OrdersAccount:{where:{status:'OPEN'}},user:true }
+		});
+
+		return value;
+	}
+
+
+	@UseMiddleware(isUserAuth)
 	@Query(() => [ObjectAccountMetaTrader], { nullable: true })
 	async accountMetaTraderObjects(@Ctx() ctx: any) {
-		const value =  await prisma.accountMetaTrader.findMany({where:{id:getTokenId(ctx)?.userId}});
+		const value =  await prisma.accountMetaTrader.findMany({where:{userId:getTokenId(ctx)?.userId}});
 		// NOTE get number all orders in progress
 		// NOTE get last invoices
 		return value;
@@ -208,8 +237,20 @@ export class AccountMetaTraderResolver {
 					},
 					include:{ OrdersAccount:{where:{status:'OPEN'}} }
 				});	
+
+				const allAcco =  await prisma.accountMetaTrader.findMany({	
+					where:{
+						
+						status:'WORK',
+						local:{ has : res },
+						
+							
 	
+					},
+					include:{ OrdersAccount:{where:{status:'OPEN'}} }
+				});	
 				console.log('allAccounts => ', allAccounts);
+				console.log('allAcco => ', allAcco);
 				const calculateLostOrdersOpen = allAccounts.map(async (index)=>{
 					
 	

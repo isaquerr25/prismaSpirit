@@ -55,3 +55,32 @@ mutation{
     message
   }
 }
+
+query{
+  accountMetaTraderSingleFind(data:{
+    id:6
+  }){
+    id
+    finishDate
+    name
+    server
+    balance
+    balanceCredit
+    accountNumber
+    status
+    OrdersAccount{
+      id
+      ticket
+      par
+      direction
+      lote
+      status
+      accountMetaTraderId
+    }
+    user{
+      email
+      name
+    }
+    __typename
+  }
+}
