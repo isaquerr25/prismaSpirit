@@ -220,6 +220,7 @@ export class AccountMetaTraderResolver {
 
 
 			const allOrdersOpen =  await prisma.orders.findMany({where:{local:res,status:'OPEN'}});
+			console.log('res = ',res);
 			console.log('allOrdersOpen = ',allOrdersOpen);
 			if(allOrdersOpen.length != 0){
 				
@@ -237,20 +238,17 @@ export class AccountMetaTraderResolver {
 					},
 					include:{ OrdersAccount:{where:{status:'OPEN'}} }
 				});	
-
+				/*
 				const allAcco =  await prisma.accountMetaTrader.findMany({	
 					where:{
 						
-						status:'WORK',
-						local:{ has : res },
-						
-							
+						status:'WORK',	
 	
 					},
-					include:{ OrdersAccount:{where:{status:'OPEN'}} }
 				});	
 				console.log('allAccounts => ', allAccounts);
 				console.log('allAcco => ', allAcco);
+				*/
 				const calculateLostOrdersOpen = allAccounts.map(async (index)=>{
 					
 	
@@ -328,7 +326,7 @@ export class AccountMetaTraderResolver {
 		completeToSend.sort((a: { id: number; }, b: { id: any; }) => a.id - (b.id));
 		
 		for(let i = completeToSend.length-1; i >= 0; i-- ) {
-			console.log(completeToSend[i].missingOrders.length);
+			//console.log(completeToSend[i].missingOrders.length);
 			if(completeToSend[i].missingOrders.length !== 0){
 
 				for(let j = completeToSend.length-1; j >= 0; j-- ) {
@@ -339,14 +337,14 @@ export class AccountMetaTraderResolver {
 					}
 				}
 			}else{
-				console.log('entro');
+				//console.log('entro');
 				completeToSend.splice(i,1);
 			}
 		}
 		
 		
-		console.log('--------------------------------------------------------------');
-		console.log(completeToSend);
+		//console.log('--------------------------------------------------------------');
+		//console.log(completeToSend);
 		
 		return completeToSend;
 	}
