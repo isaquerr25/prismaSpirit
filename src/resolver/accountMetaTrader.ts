@@ -113,33 +113,42 @@ export class AccountMetaTraderResolver {
 		@Arg('data', () => InputChangeAccountMetaTrader) data: InputChangeAccountMetaTrader,
 		@Ctx() ctx: any	)
 	{
-		let newValidateUser = {};
-
-		const currentToken = getTokenId(ctx)?.userId;
-		const newUser = await prisma.user.findFirst({
-			where: { id: currentToken },
-		});
-		if (!currentToken || !newUser){
-			newValidateUser = {
-				field: 'password',
-				message: 'Account not exist',
-			};
-			return newValidateUser;
-		}
-		if (data.balance !== undefined){
-			if(data.balance < 100000){
-				return { field: 'balance ', message: 'balance is below the 1000 dollars allowed' };
-			}
-		}
-
 		try {
+			let newValidateUser = {};
+			console.log('data ', data);
+			const currentToken = getTokenId(ctx)?.userId;
+
+			const newUser = await prisma.user.findFirst({
+				where: { id: currentToken },
+			});
+			if (!currentToken || !newUser){
+				newValidateUser = {
+					field: 'password',
+					message: 'Account not exist',
+				};
+				return newValidateUser;
+			}
+			console.log('data.balance ', data.balance);
+			if (data.balance !== undefined){
+				if(data.balance < 150000){
+					return { field: 'balance ', message: 'balance is below the 1500 dollars allowed' };
+				}
+			}
+
+		
 			await prisma.accountMetaTrader.update({
 				where: { id: data.id },
-				data: { ...data },
+				data: { 
+					balance: data.balance,
+					balanceCredit:data.balanceCredit,
+					password:(data.password ?? '').trim() !== '' ? data.password  : undefined,
+					name:(data.name ?? '').trim() !== '' ? data.name  : undefined
+				},
 			});
 			return { field: 'success', message: 'change Information' };
 		} catch (errors) {
-			return { field: 'update', message: errors };
+			console.log('errors', errors);
+			return { field: 'error', message: errors };
 		}
 				
 		
@@ -180,13 +189,18 @@ export class AccountMetaTraderResolver {
 	@Ctx() ctx: any	) 
 	{
 		// NOTE Just delete if not have problem in invoices
+		
 		try {
 			
+			const verific = await prisma.accountMetaTrader.findFirst({where:{id:data.id}});
+			if(verific?.status == 'PAY_TO_ACTIVATE' || verific?.status == 'PROCESS'){
+				return { field: 'error', message: 'There is an open invoice. To delete this account it needs to be paid.' };
+			}
 			await prisma.accountMetaTrader.delete({where:{id:data.id}});
-			return { field: 'delete', message: 'success' };
+			return { field: 'success', message: 'Successfully Deleted' };
 		} catch (error) {
-			
-			return { field: 'delete', message: error };
+			console.log(error);
+			return { field: 'error', message: 'Unable to delete account' };
 		}
 	}
 
@@ -204,10 +218,10 @@ export class AccountMetaTraderResolver {
 				where: { id: data.id },
 				data: {status : data.status},
 			});
-			return { field: 'change', message: 'success' };
+			return { field: 'success', message: 'Account status has been changed' };
 		} catch (error) {
 			
-			return { field: 'change', message: error };
+			return { field: 'error', message: 'Bad change' };
 		}
 	}
 

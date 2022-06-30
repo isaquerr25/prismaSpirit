@@ -84,3 +84,15 @@ query{
     __typename
   }
 }
+
+
+mutation{
+  accountMetaTraderDelete(data:{
+    id:
+  }){
+    field
+    message
+  }
+}
+
+
