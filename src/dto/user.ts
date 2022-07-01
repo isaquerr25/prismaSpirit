@@ -27,8 +27,6 @@ export class UserHaveComponents {
 		wallet?: string | null;
 	@Field(() => String, { nullable: true })
 		document?: string;
-	@Field(() => BigInt, { nullable: true })
-		valuePrice?: BigInt| null;
 	@Field(() => String, { nullable: true })
 		numberTelephone?: string | null;
 }
@@ -99,3 +97,12 @@ export class ForgetPasswordNewAlter {
 		password!: string;
 }
 
+@InputType()
+export class InputUserBaseInfo {
+	
+	@Field(() => String)
+		name!: string;
+	@Field(() => String)
+		numberTelephone!: string;
+		
+}

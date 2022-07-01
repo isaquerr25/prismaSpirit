@@ -4,7 +4,7 @@ mutation {
 			email: "testaaas25a@test.com"
 			password: "Teste25@"
 			name: "Jaison Manders"
-      numberTelephone:"5566999891"
+			numberTelephone: "5566999891"
 		}
 	) {
 		field
@@ -17,7 +17,7 @@ mutation {
 		data: {
 			email: "admin25a@test.com"
 			password: "Teste25@"
-			name: "Jaison Manders"      
+			name: "Jaison Manders"
 		}
 	) {
 		field
@@ -25,10 +25,10 @@ mutation {
 	}
 }
 
-
-
 mutation {
-	loginAuthUser(data: { email: "testaaas25a@test.com", password: "Teste25@" }) {
+	loginAuthUser(
+		data: { email: "testaaas25a@test.com", password: "Teste25@" }
+	) {
 		field
 		message
 	}
@@ -44,23 +44,18 @@ mutation {
 }
 
 mutation {
-	updateWallet(data: { wallet: "16vmNcrA4Mvf7CaRLirAmpnjz1ZH3bWNkQ" }) {
+	updateWallet(data: { wallet: "4Mvf7CaRLirAmpnjz1ZH3bWNkQ" }) {
 		field
 		message
 	}
 }
 
 mutation {
-	updateNumberTelephone(
-		data: {
-			numberTelephone:"569120993"
-		}
-	) {
+	updateNumberTelephone(data: { numberTelephone: "569120993" }) {
 		field
 		message
 	}
 }
-
 
 query {
 	userInfoDocument {
@@ -69,7 +64,7 @@ query {
 		wallet
 		valuePrice
 		document
-    numberTelephone
+		numberTelephone
 	}
 }
 
@@ -86,33 +81,29 @@ mutation {
 }
 
 mutation {
-	resolverForgetPassword(
-		data: {
-			email:"est25ac@test.com"
-		}
-	) {
+	resolverForgetPassword(data: { email: "est25ac@test.com" }) {
 		field
 		message
 	}
 }
 
 mutation {
-	newPassword(
-		data: {
-      token:""
-			password:""
-		}
-	) {
+	newPassword(data: { token: "", password: "" }) {
 		field
 		message
 	}
 }
 
-	mutation{
-	userValidAccount(data:{
-		token:"*******"
-	}){
+mutation {
+	userValidAccount(data: { token: "*******" }) {
 		field
 		message
 	}
+}
+
+mutation {
+	userBaseInfoUpdate(data: { name: "", numberTelephone: "" }) {
+		field
+		message
 	}
+}
