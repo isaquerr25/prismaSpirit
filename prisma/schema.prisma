@@ -25,7 +25,7 @@ model User {
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
   affiliated        User?               @relation("AffiliatedHistory", fields: [affiliatedId], references: [id])
-  affiliatedId      Int?                @unique
+  affiliatedId      Int?
   percentAffiliated Int?
   percentFess       Int?
   indicated         User[]              @relation("AffiliatedHistory")

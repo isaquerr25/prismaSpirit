@@ -134,3 +134,15 @@ export const getTokenId = (ctx: any) => {
 
 	return decodeToken(req.cookies['access-token']) as JwtPayload;
 };
+
+
+export const createTokenAffiliate = (user:number,Enum:unknown) => {
+	const privateKey:string = process.env.JWT_KEY_AFFILIATE != undefined ? process.env.JWT_KEY_AFFILIATE : '';
+	const tokenData = {
+		userId: user,
+		Enum: Enum,
+	};
+	const token = jwt.sign(tokenData, privateKey);
+	
+	return token;
+};

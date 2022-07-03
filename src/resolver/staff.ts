@@ -5,7 +5,6 @@ import { GraphState } from '../dto/utils';
 import { CreateUser, LoginUser, PasswordAlter, UserAll, UserCash, UserHaveComponents, WalletAlter } from '../dto/user';
 import { getTokenId, HashGenerator, validateCreateUser, validateLogin, validatePassword } from '../utils';
 import { validate } from 'bitcoin-address-validation';
-import { profitCycle, profitFuture, valueInCash } from './utils';
 import { isUserAuth } from '../middleware/isUserAuth';
 import { isManagerAuth } from '../middleware/isManagerAuth';
 import { InputIdUser, StaffActivity, StaffInfoUserComponents } from '../dto/staff';

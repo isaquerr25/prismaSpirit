@@ -1,7 +1,8 @@
+import { createTokenAffiliate } from './../utils/index';
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { Resolver, Query, Mutation, Arg, Ctx, UseMiddleware } from 'type-graphql';
-import { GraphState, PassToken } from '../dto/utils';
+import { GraphState, PassToken, SendToken } from '../dto/utils';
 import { CreateUser, LoginUser, PasswordAlter, UserAll, UserCash, UserHaveComponents, WalletAlter, NumberTelephoneAlter, ForgetPasswordAlter, ForgetPasswordNewAlter, InputUserBaseInfo } from '../dto/user';
 import { decodeTokenType, getTokenId, HashGenerator, validateCreateUser, validateLogin, validatePassword, validationNumberPhone } from '../utils';
 import { validate } from 'bitcoin-address-validation';
@@ -31,8 +32,6 @@ export class UserResolver {
 
 		const stateReturn = await validateCreateUser(data);
 
-		
-
 		if (await prisma.user.findFirst({ where: { email: data.email } })) {
 
 			stateReturn.push({
@@ -43,12 +42,18 @@ export class UserResolver {
 			return stateReturn;
 
 		}
-		
+
 		if (stateReturn.length == 0) {
 
 			try {
 				data.password = await HashGenerator(data.password);
-				const createUser = await prisma.user.create({ data });
+				const createUser = await prisma.user.create({ data:{
+					name:data.name,
+					email:data.email,
+					password:data.password,
+					affiliatedId: decodeTokenType(data.affiliate)?.userId
+
+				} });
 				console.log(createUser);
 				emailValidSend(createUser);
 				stateReturn.push({
@@ -56,11 +61,11 @@ export class UserResolver {
 					message: 'success',
 				});
 
-			} catch {
-
+			} catch(error){
+				console.log(error);
 				stateReturn.push({
-					field: 'create',
-					message: 'error',
+					field: 'error',
+					message: 'erro in create account',
 				});
 			
 			}
@@ -377,9 +382,13 @@ export class UserResolver {
 	async userInfoDocument(	@Ctx() ctx: any	){
 
 		const currentToken = getTokenId(ctx)?.userId;
-		return await prisma.user.findFirst({
+		const user = await prisma.user.findFirst({
 			where: { id: currentToken},
 		});
+
+		const token:string = createTokenAffiliate(currentToken,'');
+		
+		return ({...user,'affiliate':token});
 	}
 
 	@UseMiddleware(isUserAuth)
@@ -442,4 +451,62 @@ export class UserResolver {
 		}
 	}
 
+	@UseMiddleware(isUserAuth)
+	@Mutation(() => GraphState, { nullable: true })
+	async userWalletUpdate(
+
+		@Arg('data', () => WalletAlter) data: WalletAlter,
+		@Ctx() ctx: any	)
+	{
+		let newValidateUser = {};
+
+		const currentToken = getTokenId(ctx)?.userId;
+		const newUser = await prisma.user.findFirst({
+			where: { id: currentToken},
+		});
+
+		if (!currentToken || !newUser){
+			newValidateUser = {
+				field: 'account',
+				message: 'Account not exist',
+			};
+			return newValidateUser;
+		}
+		if (!data.wallet || data.wallet.trim() ==''){
+			newValidateUser = {
+				field: 'error',
+				message: 'send address valid',
+			};
+			return newValidateUser;
+		}
+
+		if (currentToken != null) {
+			console.log('await');
+			try {
+
+				await prisma.user.update({
+					where: { id: currentToken },
+					data: { hashPayment: data.wallet },
+				});
+
+				return { field: 'success', message: 'change value' };
+
+			} catch (errors) {
+
+				return { field: 'error', message: 'error on change try later' };
+			}
+		}
+		else {
+			return { field: 'error', message: 'Do not have access' };
+		}
+		
+	}
+
+	@UseMiddleware(isUserAuth)
+	@Query(() => SendToken, { nullable: true })
+	async userLinkAffiliate( @Ctx() ctx: any ){
+
+		const currentToken = getTokenId(ctx)?.userId;
+		
+	}
 }

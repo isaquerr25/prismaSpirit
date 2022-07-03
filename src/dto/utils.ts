@@ -22,3 +22,9 @@ export class PassToken {
 	@Field(() => String)
 		token!: string;
 }
+
+@ObjectType()
+export class SendToken {
+	@Field(() => String)
+		token!: string;
+}

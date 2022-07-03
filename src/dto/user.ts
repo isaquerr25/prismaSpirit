@@ -11,7 +11,7 @@ export class UserAll {
 	@Field(() => String, { nullable: true })
 		name?: string | null;
 	@Field(() => String, { nullable: true })
-		wallet?: string | null;
+		hashPayment?: string | null;
 	@Field(() => String, { nullable: true })
 		numberTelephone?: string | null;
 }
@@ -24,11 +24,13 @@ export class UserHaveComponents {
 	@Field(() => String, { nullable: true })
 		name?: string | null;
 	@Field(() => String, { nullable: true })
-		wallet?: string | null;
+		hashPayment?: string | null;
 	@Field(() => String, { nullable: true })
 		document?: string;
 	@Field(() => String, { nullable: true })
 		numberTelephone?: string | null;
+	@Field(() => String, { nullable: true })
+		affiliate?: string | null;
 }
 
 @ObjectType()
@@ -49,9 +51,13 @@ export class CreateUser {
 
 	@Field(() => String)
 		name!: string;
-
+	
 	@Field(() => String)
 		password!: string;
+	
+	@Field(() => String, { nullable: true })
+		affiliate?: string | null;
+
 }
 
 
