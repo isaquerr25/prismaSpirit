@@ -1,7 +1,7 @@
 import { isUserAuth } from './../middleware/isUserAuth';
 import { Resolver, Query, Mutation, Arg, Ctx, UseMiddleware } from 'type-graphql';
-import { InvoicesEnum, PrismaClient } from '@prisma/client';
-import { GraphState } from '../dto/utils';
+import { accountTypeEnum, InvoicesEnum, PrismaClient, AccountMetaTrader } from '@prisma/client';
+import { GraphState, PassToken } from '../dto/utils';
 import { InputChangeAccountMetaTrader, InputDeleteAccountMetaTrader, InputNewAccountMetaTrader, InputStopWorkAccountMetaTrader, ObjectAccountMetaTrader } from '../dto/accountMetaTrader';
 import { getTokenId } from '../utils';
 import { InputNewInvoices, ObjectInvoices } from '../dto/invoices';
@@ -14,10 +14,46 @@ export class InvoicesResolver {
 	@UseMiddleware(isUserAuth)
 	@Query(() => [ObjectInvoices], { nullable: true })
 	async invoiceObjects(@Ctx() ctx: any) {
-		const value =  await prisma.invoices.findMany({where:{id:getTokenId(ctx)?.userId},include:{metaTraderRefr:true}});
+		console.log(getTokenId(ctx)?.userId);
+		const value =  await prisma.invoices.findMany({
+			where:{
+				metaTraderRefr:{
+					userId:getTokenId(ctx)?.userId
+				}
+			},
+		});
 
 		return value;
 	}
+
+	@UseMiddleware(isUserAuth)
+	@Query(() => [ObjectInvoices], { nullable: true })
+	async invoiceObjectsOpen(@Ctx() ctx: any) {
+		console.log(getTokenId(ctx)?.userId);
+		const value =  await prisma.invoices.findMany({
+			where:{
+				status:{notIn:['PAID_OUT']},
+				metaTraderRefr:{
+					userId:getTokenId(ctx)?.userId
+				}
+			},
+			include:{metaTraderRefr:true}
+		});
+		return value;
+	}
+
+	@UseMiddleware(isUserAuth)
+	@Query(() => ObjectInvoices, { nullable: true })
+	async invoiceObjectSingleRequest( @Arg('data', () => PassToken) data: PassToken,@Ctx() ctx: any) {
+		const value =  await prisma.invoices.findFirst({
+			where:{
+				id:Number(data.token)
+			},
+			include:{metaTraderRefr:true}
+		});
+		return value;
+	}
+
 
 	@Mutation(() => [GraphState])
 	async invoiceCreate(@Arg('res', () => [InputNewInvoices]) 

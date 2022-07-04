@@ -125,6 +125,7 @@ enum InvoicesEnum {
 model Invoices {
 
   id                  Int               @id @default(autoincrement())
+  valueOrigin         Int               @default(0)
   valueDollar         Int
   valueReal           Int
   dollarQuote         Int
@@ -140,6 +141,7 @@ model Invoices {
   paymentProof        PaymentProof[]
   PlanInvoices        PlanInvoices?     @relation(fields: [planInvoicesId], references: [id])
   planInvoicesId      Int?
+  expirationDate      DateTime?
 }
 
 enum OrdersStatusEnum {

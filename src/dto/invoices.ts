@@ -5,20 +5,25 @@ import { ObjectType, Field, InputType, Int, registerEnumType} from 'type-graphql
 @ObjectType()
 export class ObjectInvoices  {
 	@Field(() => Int, { nullable: true }) id?: number;
+	@Field(() => Int, { nullable: true }) accountMetaTraderId?: number;
 	@Field(() => Int, { nullable: true }) valueDollar?: number;
 	@Field(() => Int, { nullable: true }) valueReal?: number;
 	@Field(() => Int, { nullable: true }) dollarQuote?: number;
 	@Field(() => Int, { nullable: true }) percentProfit?: number;
 	@Field(() => Int, { nullable: true }) percentFess?: number;
 	@Field(() => Int, { nullable: true }) percentAffiliated?: number;
-	@Field(() => InvoicesEnum) status?: InvoicesEnum;
+	@Field(() => Int, { nullable: true }) valueOrigin?: number;
+	@Field(() => InvoicesEnum, { nullable: true }) status?: InvoicesEnum;
 	@Field(() => Date, { nullable: true }) createdAt?: Date;
 	@Field(() => Date, { nullable: true }) paymenbeginDate?: Date;
 	@Field(() => Date, { nullable: true }) paymentDate?: Date;
 	@Field(() => Date, { nullable: true }) updatedAt?: Date;
 	@Field(() => ObjectAccountMetaTrader, { nullable: true }) metaTraderRefr?: ObjectAccountMetaTrader;
 	@Field(() => Date, { nullable: true }) PaymentProof?: Date;
+	@Field(() => Date, { nullable: true }) expirationDate?: Date;
+	
 }
+
 registerEnumType(InvoicesEnum, {
 	name: 'InvoicesEnum',
 

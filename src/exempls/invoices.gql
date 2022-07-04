@@ -1,18 +1,69 @@
-query{
-  invoiceObjects{
-    valueDollar
-    valueReal
-    dollarQuote
-    percentProfit
-    percentFess
-    percentAffiliated
-    status
-    createdAt
-    paymenbeginDate
-    updatedAt
-    metaTraderRefr{
-      name
-      status
-    }
-  }
+query {
+	invoiceObjects {
+		id
+		valueDollar
+		valueReal
+		dollarQuote
+		percentProfit
+		percentProfit
+		percentFess
+		percentAffiliated
+		status
+		paymenbeginDate
+		expirationDate
+	}
+}
+
+query {
+	invoiceObjectsOpen {
+		id
+		valueDollar
+		valueReal
+		dollarQuote
+		percentProfit
+		percentProfit
+		percentFess
+		percentAffiliated
+		status
+		paymenbeginDate
+		expirationDate
+		accountMetaTraderId
+		valueOrigin
+		metaTraderRefr {
+			id
+			name
+			balance
+			balanceCredit
+			accountNumber
+			status
+			finishDate
+		}
+	}
+}
+
+query {
+	invoiceObjectSingleRequest(data: { token: "12" }) {
+		id
+		valueDollar
+		valueReal
+		dollarQuote
+		percentProfit
+		percentProfit
+		percentFess
+		percentAffiliated
+		status
+		paymenbeginDate
+		expirationDate
+		accountMetaTraderId
+		valueOrigin
+		metaTraderRefr {
+			id
+			name
+			balance
+			balanceCredit
+			accountNumber
+			status
+			finishDate
+		}
+	}
 }

@@ -8,8 +8,6 @@ export class ObjectAccountMetaTrader  {
 		id?: number;
 	@Field(() => String, { nullable: true })
 		name?: string;
-	@Field(() => String, { nullable: true })
-		server?: string;
 	@Field(() => Int, { nullable: true })
 		balance?: number;
 	@Field(() => Int, { nullable: true })

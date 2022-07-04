@@ -72,6 +72,7 @@ export class PlanInvoicesResolver {
 		return prisma.planInvoices.findMany();
 	}
 
+
 	@UseMiddleware(isManagerAuth)
 	@Mutation(() => [GraphState])
 	async planInvoicesUpdate(@Arg('data', () => InputUpdatePlanInvoices) 
