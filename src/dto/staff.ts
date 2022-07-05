@@ -1,5 +1,8 @@
-import { ObjectType, Field, InputType, Int} from 'type-graphql';
+import { AccountMetaTraderTypeEnum, accountTypeEnum } from '@prisma/client';
+import { ObjectType, Field, InputType, Int, registerEnumType} from 'type-graphql';
 import BigInt from 'graphql-bigint';
+import { ObjectOrdersAccounts } from './ordersAccount';
+import { ObjectOrders } from './orders';
 
 @ObjectType()
 export class StaffActivity {
@@ -64,3 +67,37 @@ export class StaffInfoUserComponents {
 	@Field(() => String, { nullable: true })
 		cash?: string| null;
 }
+
+
+@ObjectType()
+export class ObjectAccountMetaTraderStaff  {
+
+	@Field(() => Int, { nullable: true })	id?: number;
+	@Field(() => String, { nullable: true }) name?: string;
+	@Field(() => String, { nullable: true }) password?: string;
+	@Field(() => String, { nullable: true }) server?: string;
+	@Field(() => Int, { nullable: true }) balance?: number;
+	@Field(() => Int, { nullable: true }) balanceCredit?: number;
+	@Field(() => Int, { nullable: true }) accountNumber?: number;
+	@Field(() => String, { nullable: true }) status?: string;
+	@Field(() => Date, { nullable: true }) finishDate?: Date;
+	@Field(() => Int, { nullable: true }) userId?: number;
+	@Field(() => AccountMetaTraderTypeEnum, { nullable: true }) typeAccount?: AccountMetaTraderTypeEnum;
+	@Field(() => [String], { nullable: true }) local?: string[];
+	@Field(() => accountTypeEnum, { nullable: true }) accountType?: accountTypeEnum;
+	@Field(() => [ObjectOrders], { nullable: true }) refOriginalOrder?: ObjectOrders[];
+
+}
+
+registerEnumType(AccountMetaTraderTypeEnum, {
+	name: 'AccountMetaTraderTypeEnum',
+});
+
+registerEnumType(accountTypeEnum, {
+	name: 'accountTypeEnum',
+});
+
+
+
+
+

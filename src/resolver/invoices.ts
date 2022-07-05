@@ -21,6 +21,7 @@ export class InvoicesResolver {
 					userId:getTokenId(ctx)?.userId
 				}
 			},
+			include:{metaTraderRefr:true}
 		});
 
 		return value;

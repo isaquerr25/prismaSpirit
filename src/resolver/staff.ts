@@ -1,3 +1,4 @@
+import { InputAccountMetaTraderSingleFind, ObjectAccountFilterAccount } from './../dto/accountMetaTrader';
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { Resolver, Query, Mutation, Arg, Ctx, UseMiddleware } from 'type-graphql';
@@ -7,8 +8,9 @@ import { getTokenId, HashGenerator, validateCreateUser, validateLogin, validateP
 import { validate } from 'bitcoin-address-validation';
 import { isUserAuth } from '../middleware/isUserAuth';
 import { isManagerAuth } from '../middleware/isManagerAuth';
-import { InputIdUser, StaffActivity, StaffInfoUserComponents } from '../dto/staff';
+import { InputIdUser, ObjectAccountMetaTraderStaff, StaffActivity, StaffInfoUserComponents } from '../dto/staff';
 import { addDays } from 'date-fns';
+import { ObjectAccountFindToUser } from '../dto/accountMetaTrader';
 export const prisma = new PrismaClient();
 
 
@@ -39,7 +41,7 @@ export class StaffResolver {
 			if (!businessEnum.includes(haveEmail.Role.toString())) {
 				
 				newValidateUser.push({
-					field: 'not Staff',
+					field: 'error',
 					message: 'email or password wrong',
 				});
 				return newValidateUser;
@@ -80,7 +82,22 @@ export class StaffResolver {
 		return newValidateUser;
 	}
 
-	
+	@UseMiddleware(isManagerAuth)
+	@Query(() => ObjectAccountMetaTraderStaff, { nullable: true })
+	async accountMetaTraderSingleFindStaff( 
+		@Arg('data') data: InputAccountMetaTraderSingleFind, 
+		@Ctx() ctx: any) {
+			
+		const value =  await prisma.accountMetaTrader.findFirst({
+			where:{
+
+				id:data.id
+			},
+			include:{ OrdersAccount:{where:{status:'OPEN'}},user:true }
+		});
+
+		return value;
+	}
 
 
 	/* -------------------------------------------------------------------------- */

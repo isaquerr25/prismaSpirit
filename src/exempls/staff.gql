@@ -64,21 +64,33 @@ mutation{
   }
 }
 
-mutation{
-  allCycleByUserStaff(data:{
-    id:3
-  }){
-    id
-    action
-    valueUSD
-    valueBTC
-    finalValueUSD
-    finalValueBTC
-    state
-    beginDate
+query{
+  accountMetaTraderAllObjectsStaff{
+   id
+    name
+    password
+    server
+    balance
+    balanceCredit
+    accountNumber
+    status
     finishDate
-    createdAt
-    updatedAt
-    hash
+    userId
+    typeAccount
+    local
+    accountType
+    refOriginalOrder{
+      id
+      par
+      direction
+      lote
+      ticket
+      local
+      type
+      status
+      createdAt
+      updatedAt
+      __typename
+    }
   }
 }

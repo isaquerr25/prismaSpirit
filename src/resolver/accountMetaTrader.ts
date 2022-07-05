@@ -1,3 +1,4 @@
+import { isManagerAuth } from './../middleware/isManagerAuth';
 import { ObjectAccountFindToUser, InputAccountMetaTraderSingleFind } from './../dto/accountMetaTrader';
 import { isUserAuth } from './../middleware/isUserAuth';
 import { Resolver, Query, Mutation, Arg, Ctx, UseMiddleware } from 'type-graphql';
@@ -7,6 +8,7 @@ import { InputAccountPython, InputChangeAccountMetaTrader, InputDeleteAccountMet
 import { getTokenId } from '../utils';
 import { loteRangeInfluence } from './loteAutoCalculate';
 import { ObjectFilterAccountOrders } from '../dto/orders';
+import { ObjectAccountMetaTraderStaff } from '../dto/staff';
 export const prisma = new PrismaClient();
 
 
@@ -173,6 +175,13 @@ export class AccountMetaTraderResolver {
 	}
 
 
+	@UseMiddleware(isManagerAuth)
+	@Query(() => [ObjectAccountMetaTraderStaff], { nullable: true })
+	async accountMetaTraderAllObjectsStaff(@Ctx() ctx: any) {
+		const value =  await prisma.accountMetaTrader.findMany({include:{OrdersAccount:true}});
+		return value;
+	}
+
 	@UseMiddleware(isUserAuth)
 	@Query(() => [ObjectAccountMetaTrader], { nullable: true })
 	async accountMetaTraderObjects(@Ctx() ctx: any) {
@@ -225,6 +234,7 @@ export class AccountMetaTraderResolver {
 		}
 	}
 
+	@UseMiddleware(isUserAuth)
 	@Query(() => [ObjectAccountFilterAccount], { nullable: true })
 	async ordersFilterAccount( @Arg('data') data: ObjectFilterAccountOrders) {
 		
@@ -364,6 +374,7 @@ export class AccountMetaTraderResolver {
 	}
 
 
+	@UseMiddleware(isUserAuth)
 	@Mutation(() => GraphState, { nullable: true })
 	async accountUpdatePython(
 		@Arg('data', () => InputAccountPython) data: InputAccountPython
