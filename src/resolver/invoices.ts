@@ -52,6 +52,12 @@ export class InvoicesResolver {
 			},
 			include:{metaTraderRefr:true}
 		});
+
+	
+		const { res } = ctx;
+
+		res.cookie('invoice', {token:value?.id} ,{maxAge: 1000 * 60 * 60 * 24,});
+
 		return value;
 	}
 

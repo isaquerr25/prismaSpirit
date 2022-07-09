@@ -1,4 +1,4 @@
-import { InputAccountMetaTraderSingleFind, ObjectAccountFilterAccount } from './../dto/accountMetaTrader';
+import { InputAccountMetaTraderSingleFind, InputChangeAccountMetaTrader, ObjectAccountFilterAccount } from './../dto/accountMetaTrader';
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { Resolver, Query, Mutation, Arg, Ctx, UseMiddleware } from 'type-graphql';
@@ -8,7 +8,7 @@ import { getTokenId, HashGenerator, validateCreateUser, validateLogin, validateP
 import { validate } from 'bitcoin-address-validation';
 import { isUserAuth } from '../middleware/isUserAuth';
 import { isManagerAuth } from '../middleware/isManagerAuth';
-import { InputIdUser, ObjectAccountMetaTraderStaff, StaffActivity, StaffInfoUserComponents } from '../dto/staff';
+import { InputIdUser, InputUpdateAccountMetaTraderStaff, ObjectAccountMetaTraderStaff, StaffActivity, StaffInfoUserComponents } from '../dto/staff';
 import { addDays } from 'date-fns';
 import { ObjectAccountFindToUser } from '../dto/accountMetaTrader';
 export const prisma = new PrismaClient();
@@ -100,6 +100,33 @@ export class StaffResolver {
 	}
 
 
+	@UseMiddleware(isManagerAuth)
+	@Mutation(() => GraphState, { nullable: true })
+	async accountMetaTraderUpdateStaff(
+		@Arg('data', () => InputUpdateAccountMetaTraderStaff) data: InputUpdateAccountMetaTraderStaff,
+		@Ctx() ctx: any	)
+	{
+		try {
+
+			await prisma.accountMetaTrader.update({
+				where: { id: data.id },
+				data: { 
+					...data,
+					local: {
+						
+						set: data.local
+					}
+				},
+			});
+			return { field: 'success', message: 'change Information' };
+		} catch (errors) {
+			console.log('errors', errors);
+			return { field: 'error', message: errors };
+		}
+				
+		
+		return { field: 'update', message: '404' };
+	}
 	/* -------------------------------------------------------------------------- */
 
 

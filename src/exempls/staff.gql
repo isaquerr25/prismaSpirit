@@ -94,3 +94,35 @@ query{
     }
   }
 }
+
+
+
+mutation{
+  accountMetaTraderUpdateStaff(data:{
+     id:1
+     name:"pato"
+    password:"asdasda"
+    server:"asdasda"
+    balance:100
+    balanceCredit:10
+    accountNumber:10
+    status:WAIT_PAYMENT
+    finishDate:"asdasda"
+    userId:7
+    typeAccount:ADMIN
+    local:"asdassssda"
+    accountType:LOW
+    }){
+    field
+    message
+  }
+  
+}
+
+
+
+
+
+
+
+

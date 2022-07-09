@@ -1,4 +1,4 @@
-import { AccountMetaTraderTypeEnum, accountTypeEnum } from '@prisma/client';
+import { AccountMetaTraderEnum, AccountMetaTraderTypeEnum, accountTypeEnum, InvoicesEnum, OrdersStatusEnum } from '@prisma/client';
 import { ObjectType, Field, InputType, Int, registerEnumType} from 'type-graphql';
 import BigInt from 'graphql-bigint';
 import { ObjectOrdersAccounts } from './ordersAccount';
@@ -88,6 +88,26 @@ export class ObjectAccountMetaTraderStaff  {
 	@Field(() => [ObjectOrders], { nullable: true }) refOriginalOrder?: ObjectOrders[];
 
 }
+
+@InputType()
+export class InputUpdateAccountMetaTraderStaff  {
+	@Field(() => Int) id!: number;
+	@Field(() => String) name!: string;
+	@Field(() => String) password!: string;
+	@Field(() => String) server!: string;
+	@Field(() => Int) balance!: number;
+	@Field(() => Int) balanceCredit!: number;
+	@Field(() => Int) accountNumber!: number;
+	@Field(() => AccountMetaTraderEnum) status!: AccountMetaTraderEnum;
+	@Field(() => Date) finishDate!: Date;
+	@Field(() => AccountMetaTraderTypeEnum) typeAccount!: AccountMetaTraderTypeEnum;
+	@Field(() => [String]) local!: string[];
+	@Field(() => accountTypeEnum) accountType!: accountTypeEnum;
+}
+
+registerEnumType(AccountMetaTraderEnum, {
+	name: 'AccountMetaTraderEnum',
+});
 
 registerEnumType(AccountMetaTraderTypeEnum, {
 	name: 'AccountMetaTraderTypeEnum',
