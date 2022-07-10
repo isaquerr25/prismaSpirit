@@ -9,7 +9,7 @@ import fs from 'fs';
 import { isManagerAuth } from '../middleware/isManagerAuth';
 import { DocumentAll, DocumentAllUser, InputDocumentAlter } from '../dto/document';
 import { GraphQLUpload } from 'graphql-upload';
-import { SendToken } from '../dto/utils';
+import { GraphState, SendToken } from '../dto/utils';
 
 
 export const prisma = new PrismaClient();
@@ -86,27 +86,69 @@ export class DocumentPictureResolver {
 		}
 		return true;
 	}
+
+	@UseMiddleware(isManagerAuth)
 	@Query(() => [DocumentAll])
 	async allDocuments(){
 		return prisma.paymentProof.findMany();
 	}
-	@Query(() => [DocumentAllUser])
+
+	@UseMiddleware(isManagerAuth)
+	@Query(() => [DocumentAll])
 	async allDocumentsValidation(){
-		return prisma.paymentProof.findMany({where:{state:'PROCESS'}});
+		return prisma.paymentProof.findMany({where:{state:'PROCESS'},include:{refInvoce:{include:{metaTraderRefr:true}}}});
 	}
 
 	@UseMiddleware(isManagerAuth)
-	@Mutation(() => Boolean, { nullable: true })
+	@Mutation(() => GraphState, { nullable: true })
 	async alterDocument(@Arg('data',()=>InputDocumentAlter) data:InputDocumentAlter){
 
 		try{
-			await prisma.paymentProof.update({
+
+			const pay =  await prisma.paymentProof.update({
 				where:{id:data.id},
 				data:{state:'PROCESS'}
 			});
-			return true;
-		}catch{
-			return false;
+
+			const invoicesAlter =  await prisma.invoices.update({
+				where:{id:pay.invoicesId},
+				data:{status: 
+					pay.state == 'INVALID' ? 'DOCUMENT_SEND_INVALID' : (
+						pay.state == 'VALID' ? 'PAID_OUT' : 'CANCEL' )
+				
+				},
+				include:{metaTraderRefr:true}
+			});
+			if(pay.state == 'VALID'){
+				const nextDay = new Date();
+				nextDay.setMonth(nextDay.getMonth() + 1); 
+				const correctDay = new Date(nextDay.getFullYear(),nextDay.getMonth(),10);
+				
+				nextDay.setMonth((invoicesAlter.metaTraderRefr.finishDate ?? nextDay).getDate() + 35);
+	
+				await prisma.accountMetaTrader.update({
+					where:{id:invoicesAlter.accountMetaTraderId},
+					data:{status: invoicesAlter.metaTraderRefr.status == 'STOP' || 
+									invoicesAlter.metaTraderRefr.status == 'WORK' ? 
+						invoicesAlter.metaTraderRefr.status : 'STOP',
+					finishDate: correctDay}
+					
+				});
+			}
+
+			return  {
+				field: 'success',
+				message: 'success in alter',
+			};
+
+
+		}catch(error){
+			console.log('alterDocument  ',error);
+			return  {
+				field: 'error',
+				message: 'success in alter',
+			};
+			
 		}
 
 

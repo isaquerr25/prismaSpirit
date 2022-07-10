@@ -16,10 +16,68 @@ export const prisma = new PrismaClient();
 @Resolver()
 export class OrdersResolver {
 
+	@UseMiddleware(isManagerAuth)
 	@Query(() => [ObjectOrders], { nullable: true })
 	async ordersAll() {
 		return prisma.orders.findMany({include:{}});
 	}
+
+	@UseMiddleware(isManagerAuth)
+	@Mutation(() => [GraphState])
+	async ordersUpdateSite(@Arg('data', () => InputUpdateOrders) 
+		data: InputUpdateOrders,
+		@Ctx() ctx: any	
+	) {
+		
+		const progressInfo = [{}];
+
+		try {
+
+			await prisma.orders.update({ where:{id:data.id} ,data });
+			progressInfo.push({
+				field: 'update',
+				message: 'success',
+			});
+
+		} catch(error) {
+			console.log('bad :',error);
+			progressInfo.push({
+				field: 'update',
+				message: 'error',
+			});
+
+		}
+		return progressInfo;
+	}
+
+	@UseMiddleware(isManagerAuth)
+	@Mutation(() => [GraphState])
+	async ordersDeleteSite(@Arg('data', () => InputDeleteOrders) 
+		data: InputDeleteOrders,
+		@Ctx() ctx: any	
+	) {
+		
+		const progressInfo = [{}];
+
+		try {
+
+			await prisma.orders.delete({ where:{id:data.id} });
+			progressInfo.push({
+				field: 'delete',
+				message: 'success',
+			});
+
+		} catch(error) {
+			console.log('bad :',error);
+			progressInfo.push({
+				field: 'delete',
+				message: 'error',
+			});
+
+		}
+		return progressInfo;
+	}	
+
 
 	@Mutation(() => [GraphState])
 	async ordersCreate(@Arg('data', () => InputNewtOrders) 

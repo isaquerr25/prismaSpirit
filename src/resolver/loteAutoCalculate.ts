@@ -21,6 +21,7 @@ export class LoteAutoCalculateResolver {
 	async loteAutoCalculateAll() {
 		return prisma.loteAutoCalculate.findMany();
 	}
+
 	@UseMiddleware(isManagerAuth)
 	@Mutation(() => [GraphState])
 	async loteAutoCalculateCreate(@Arg('data', () => InputNewLoteAutoCalculate) 
@@ -113,6 +114,7 @@ export class LoteAutoCalculateResolver {
 		}
 		return progressInfo;
 	}
+	
 	@UseMiddleware(isManagerAuth)
 	@Mutation(() => [GraphState])
 	async loteAutoCalculateUpdate (@Arg('data', () => InputUpdateLoteAutoCalculate) 
