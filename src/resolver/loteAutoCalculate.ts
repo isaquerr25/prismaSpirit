@@ -1,4 +1,4 @@
-import { InputUpdateLoteAutoCalculate, InputDeleteLoteAutoCalculate } from './../dto/loteAutoCalculate';
+import { InputUpdateLoteAutoCalculate, InputDeleteLoteAutoCalculate, SendId } from './../dto/loteAutoCalculate';
 import { InputDeleteOrders, InputNewtOrders, InputUpdateOrders, ObjectOrders } from './../dto/orders';
 import { isUserAuth } from './../middleware/isUserAuth';
 import { Resolver, Query, Mutation, Arg, Ctx, UseMiddleware } from 'type-graphql';
@@ -19,9 +19,19 @@ export class LoteAutoCalculateResolver {
 	@UseMiddleware(isManagerAuth)
 	@Query(() => [ObjectLoteAutoCalculate], { nullable: true })
 	async loteAutoCalculateAll() {
-		return prisma.loteAutoCalculate.findMany();
+		return await prisma.loteAutoCalculate.findMany();
 	}
 
+	@UseMiddleware(isManagerAuth)
+	@Query(() => ObjectLoteAutoCalculate, { nullable: true })
+	async loteAutoCalculateSingleFindStaff(@Arg('data', () => SendId ) 
+		data: SendId,
+		@Ctx() ctx: any	
+	) {
+
+		return	await prisma.loteAutoCalculate.findFirst({ where:{id:data.id} });	
+
+	}
 	@UseMiddleware(isManagerAuth)
 	@Mutation(() => [GraphState])
 	async loteAutoCalculateCreate(@Arg('data', () => InputNewLoteAutoCalculate) 

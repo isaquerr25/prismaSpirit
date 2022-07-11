@@ -56,3 +56,9 @@ export class InputUpdateLoteAutoCalculate {
 export class InputDeleteLoteAutoCalculate {
     @Field(() => Int)id!: number;
 }
+
+
+@InputType()
+export class SendId {
+	@Field(() => Int)id!: number;
+}

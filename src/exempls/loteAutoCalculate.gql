@@ -64,3 +64,18 @@ mutation {
 		message
 	}
 }
+
+query {
+	loteAutoCalculateSingleFindStaff(data: { id: 1 }) {
+		minCapital
+		maxCapital
+		maxLot
+		minLot
+		local
+		valueBase
+		type
+		styleMath
+		createdAt
+		updatedAt
+	}
+}

@@ -79,12 +79,12 @@ export class ObjectAccountMetaTraderStaff  {
 	@Field(() => Int, { nullable: true }) balance?: number;
 	@Field(() => Int, { nullable: true }) balanceCredit?: number;
 	@Field(() => Int, { nullable: true }) accountNumber?: number;
-	@Field(() => String, { nullable: true }) status?: string;
+	@Field(() => AccountMetaTraderEnum) status!: AccountMetaTraderEnum;
 	@Field(() => Date, { nullable: true }) finishDate?: Date;
 	@Field(() => Int, { nullable: true }) userId?: number;
-	@Field(() => AccountMetaTraderTypeEnum, { nullable: true }) typeAccount?: AccountMetaTraderTypeEnum;
+	@Field(() => AccountMetaTraderTypeEnum) typeAccount!: AccountMetaTraderTypeEnum;
 	@Field(() => [String], { nullable: true }) local?: string[];
-	@Field(() => accountTypeEnum, { nullable: true }) accountType?: accountTypeEnum;
+	@Field(() => accountTypeEnum) accountType!: accountTypeEnum;
 	@Field(() => [ObjectOrders], { nullable: true }) refOriginalOrder?: ObjectOrders[];
 
 }
