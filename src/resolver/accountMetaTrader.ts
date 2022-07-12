@@ -2,13 +2,14 @@ import { isManagerAuth } from './../middleware/isManagerAuth';
 import { ObjectAccountFindToUser, InputAccountMetaTraderSingleFind } from './../dto/accountMetaTrader';
 import { isUserAuth } from './../middleware/isUserAuth';
 import { Resolver, Query, Mutation, Arg, Ctx, UseMiddleware } from 'type-graphql';
-import { PrismaClient } from '@prisma/client';
+import { InvoicesEnum, PrismaClient } from '@prisma/client';
 import { GraphState } from '../dto/utils';
 import { InputAccountPython, InputChangeAccountMetaTrader, InputDeleteAccountMetaTrader, InputNewAccountMetaTrader, InputStopWorkAccountMetaTrader, ObjectAccountFilterAccount, ObjectAccountMetaTrader } from '../dto/accountMetaTrader';
 import { getTokenId } from '../utils';
 import { loteRangeInfluence } from './loteAutoCalculate';
 import { ObjectFilterAccountOrders } from '../dto/orders';
 import { ObjectAccountMetaTraderStaff } from '../dto/staff';
+import axios from 'axios';
 export const prisma = new PrismaClient();
 
 
@@ -33,7 +34,7 @@ export class AccountMetaTraderResolver {
 			});
 			return progressInfo;
 		}
-		if (!await prisma.accountMetaTrader.findFirst({ where: { 
+		if (await prisma.accountMetaTrader.findFirst({ where: { 
 			accountNumber: data.accountNumber , 
 			server: data.server} 
 		})) {
@@ -89,9 +90,23 @@ export class AccountMetaTraderResolver {
 		}   
 		try {
 
-			await prisma.accountMetaTrader.create({ data:{
+			const accountFinish = await prisma.accountMetaTrader.create({ data:{
 				...data,
 				local:'default'
+			} });
+
+			const convertValue = Number((await axios.get('https://economia.awesomeapi.com.br/last/USD-BRL')).data.high ?? 5.5) ;
+
+			await prisma.invoices.create({ data:{
+				valueDollar: Number(process.env.ATIVATION_TAX ?? 10 ) * 100 ,
+				valueReal: Number(process.env.ATIVATION_TAX ?? 60 ) * 100 * convertValue,
+				dollarQuote: convertValue * 100,
+				percentProfit:0,
+				percentFess:0,
+				status:InvoicesEnum.WAIT_PAYMENT,
+				paymenbeginDate: new Date(),
+				accountMetaTraderId: accountFinish.id,
+				planInvoicesId: 2,
 			} });
 			progressInfo.push({
 				field: 'success',
