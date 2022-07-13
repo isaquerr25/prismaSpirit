@@ -105,12 +105,12 @@ export class DocumentPictureResolver {
 
 		try{
 
-			const pay =  await prisma.paymentProof.update({
+			const pay = await prisma.paymentProof.update({
 				where:{id:data.id},
-				data:{state:'PROCESS'}
+				data:{state:data.state}
 			});
 
-			const invoicesAlter =  await prisma.invoices.update({
+			const invoicesAlter = await prisma.invoices.update({
 				where:{id:pay.invoicesId},
 				data:{status: 
 					pay.state == 'INVALID' ? 'DOCUMENT_SEND_INVALID' : (
@@ -119,6 +119,7 @@ export class DocumentPictureResolver {
 				},
 				include:{metaTraderRefr:true}
 			});
+
 			if(pay.state == 'VALID'){
 				const nextDay = new Date();
 				nextDay.setMonth(nextDay.getMonth() + 1); 
