@@ -1,8 +1,8 @@
-import { InputDeleteOrders, InputNewtOrders, InputUpdateOrders, ObjectFilterAccountOrders, ObjectOrders } from './../dto/orders';
+import { InputDeleteOrders, InputNewtOrders, InputUpdateOrders, InputUpdateOrdersSite, ObjectFilterAccountOrders, ObjectOrders } from './../dto/orders';
 import { isUserAuth } from './../middleware/isUserAuth';
 import { Resolver, Query, Mutation, Arg, Ctx, UseMiddleware } from 'type-graphql';
 import { InvoicesEnum, PrismaClient, Orders, AccountMetaTraderEnum, AccountMetaTraderTypeEnum, accountTypeEnum, OrdersAccount } from '@prisma/client';
-import { GraphState } from '../dto/utils';
+import { GraphState, PassToken, SendToken } from '../dto/utils';
 import { InputChangeAccountMetaTrader, InputDeleteAccountMetaTrader, InputNewAccountMetaTrader, InputStopWorkAccountMetaTrader, ObjectAccountFilterAccount, ObjectAccountMetaTrader } from '../dto/accountMetaTrader';
 import { getTokenId } from '../utils';
 import { InputNewInvoices, ObjectInvoices } from '../dto/invoices';
@@ -19,12 +19,20 @@ export class OrdersResolver {
 	@UseMiddleware(isManagerAuth)
 	@Query(() => [ObjectOrders], { nullable: true })
 	async ordersAll() {
-		return prisma.orders.findMany({include:{}});
+		return prisma.orders.findMany({include:{OrdersAccount:true}});
 	}
 
 	@UseMiddleware(isManagerAuth)
-	@Mutation(() => [GraphState])
-	async ordersUpdateSite(@Arg('data', () => InputUpdateOrders) 
+	@Query(() => ObjectOrders, { nullable: true })
+	async ordersFindSingleOrderStaff( 
+		@Arg('data') data: PassToken, 
+		@Ctx() ctx: any){
+		return prisma.orders.findFirst({where:{id:Number(data.token ?? 0)}, include:{OrdersAccount:true}});
+	}
+
+	@UseMiddleware(isManagerAuth)
+	@Mutation(() => GraphState)
+	async ordersUpdateSite(@Arg('data', () => InputUpdateOrdersSite) 
 		data: InputUpdateOrders,
 		@Ctx() ctx: any	
 	) {
@@ -34,17 +42,17 @@ export class OrdersResolver {
 		try {
 
 			await prisma.orders.update({ where:{id:data.id} ,data });
-			progressInfo.push({
+			return{
 				field: 'update',
 				message: 'success',
-			});
+			};
 
 		} catch(error) {
 			console.log('bad :',error);
-			progressInfo.push({
+			return{
 				field: 'update',
 				message: 'error',
-			});
+			};
 
 		}
 		return progressInfo;
@@ -151,31 +159,30 @@ export class OrdersResolver {
 		return progressInfo;
 	}
 	
-	@Mutation(() => [GraphState])
+	@Mutation(() => GraphState)
 	async ordersUpdate(@Arg('data', () => InputUpdateOrders) 
 		data: InputUpdateOrders,
 		@Ctx() ctx: any	
 	) {
-		
-		const progressInfo = [{}];
+
 
 		try {
 
 			await prisma.orders.update({ where:{id:data.id} ,data });
-			progressInfo.push({
-				field: 'update',
-				message: 'success',
-			});
+			return{
+				field: 'success',
+				message: 'update with success',
+			};
 
 		} catch(error) {
 			console.log('bad :',error);
-			progressInfo.push({
-				field: 'update',
-				message: 'error',
-			});
+			return{
+				field: 'error',
+				message: 'update with error',
+			};
 
 		}
-		return progressInfo;
+
 	}
 
 

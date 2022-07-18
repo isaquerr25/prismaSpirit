@@ -45,6 +45,12 @@ export class InputNewtOrders  {
 
 }
 
+
+@InputType()
+export class InputUpdateOrdersSite  {
+    @Field(() => Int) id!: number;
+	@Field(() => OrdersStatusEnum, { nullable: true }) status?: OrdersStatusEnum;
+}
 @InputType()
 export class InputUpdateOrders  {
     @Field(() => Int) id!: number;
