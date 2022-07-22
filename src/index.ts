@@ -41,6 +41,7 @@ const transporter = nodemailer.createTransport({
 
 	const corsOptions = {
 		origin: [
+			'http://185.227.110.67:7000',
 			'http://192.168.1.66:3000',
 			'http://192.168.1.66:3000/',
 			'http://localhost:3000',
