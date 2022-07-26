@@ -1,5 +1,5 @@
 import { InputDeleteOrders, InputNewtOrders, InputUpdateOrders, InputUpdateOrdersSite, ObjectFilterAccountOrders, ObjectOrders } from './../dto/orders';
-import { isUserAuth } from './../middleware/isUserAuth';
+import { isUserAuth } from '../middleware/isUserAuth';
 import { Resolver, Query, Mutation, Arg, Ctx, UseMiddleware } from 'type-graphql';
 import { InvoicesEnum, PrismaClient, Orders, AccountMetaTraderEnum, AccountMetaTraderTypeEnum, accountTypeEnum, OrdersAccount } from '@prisma/client';
 import { GraphState, PassToken, SendToken } from '../dto/utils';

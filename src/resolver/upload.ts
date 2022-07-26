@@ -1,4 +1,4 @@
-import { isUserAuth } from './../middleware/isUserAuth';
+import { isUserAuth } from '../middleware/isUserAuth';
 import { Resolver, Mutation, Arg, Ctx, Query, UseMiddleware } from 'type-graphql';
 import { createWriteStream } from 'fs';
 import { Stream } from 'stream';

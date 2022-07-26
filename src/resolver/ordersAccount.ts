@@ -1,6 +1,6 @@
 import { InputDeleteOrdersAccounts, InputOrdersAccountGroupDefinition } from './../dto/ordersAccount';
 import { InputDeleteOrders, InputNewtOrders, InputUpdateOrders, ObjectOrders } from './../dto/orders';
-import { isUserAuth } from './../middleware/isUserAuth';
+import { isUserAuth } from '../middleware/isUserAuth';
 import { Resolver, Query, Mutation, Arg, Ctx, UseMiddleware } from 'type-graphql';
 import { InvoicesEnum, OrdersDirectionEnum, PrismaClient, OrdersTypeEnum, OrdersStatusEnum } from '@prisma/client';
 import { GraphState } from '../dto/utils';

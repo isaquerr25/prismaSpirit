@@ -1,15 +1,18 @@
+
 import { createTokenAffiliate } from './../utils/index';
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { Resolver, Query, Mutation, Arg, Ctx, UseMiddleware } from 'type-graphql';
 import { GraphState, PassToken, SendToken } from '../dto/utils';
-import { CreateUser, LoginUser, PasswordAlter, UserAll, UserCash, UserHaveComponents, WalletAlter, NumberTelephoneAlter, ForgetPasswordAlter, ForgetPasswordNewAlter, InputUserBaseInfo } from '../dto/user';
+import { CreateUser, LoginUser, PasswordAlter, UserAll, UserCash, UserHaveComponents, WalletAlter, NumberTelephoneAlter, ForgetPasswordAlter, ForgetPasswordNewAlter, InputUserBaseInfo, UserAccountStaff } from '../dto/user';
 import { decodeTokenType, getTokenId, HashGenerator, validateCreateUser, validateLogin, validatePassword, validationNumberPhone } from '../utils';
 import { validate } from 'bitcoin-address-validation';
-import { isUserAuth } from '../middleware/isUserAuth';
+
 import { isManagerAuth } from '../middleware/isManagerAuth';
 import emailValidSend, { emailForgetPasswordSend } from '../systemEmail';
 import { number } from 'yup';
+import { isLogs } from '../middleware/isLogs';
+import { isUserAuth } from '../middleware/isUserAuth';
 export const prisma = new PrismaClient();
 
 
@@ -25,6 +28,12 @@ export class UserResolver {
 	@Query(() => [UserAll], { nullable: true })
 	async allUsers() {
 		return prisma.user.findMany();
+	}
+
+	@UseMiddleware(isManagerAuth)
+	@Query(() => [UserAccountStaff], { nullable: true })
+	async allUsersAccountStaff() {
+		return await prisma.user.findMany({include:{AccountMetaTrader:true}});
 	}
 
 	@Mutation(() => [GraphState])
@@ -86,6 +95,7 @@ export class UserResolver {
 	GetValidateEmail(email: string) {
 		return prisma.user.findFirst({ where: { email } });
 	}
+
 
 	@Mutation(() => [GraphState])
 	async loginAuthUser(

@@ -1,6 +1,6 @@
 import { isManagerAuth } from './../middleware/isManagerAuth';
 import { ObjectAccountFindToUser, InputAccountMetaTraderSingleFind } from './../dto/accountMetaTrader';
-import { isUserAuth } from './../middleware/isUserAuth';
+import { isUserAuth } from '../middleware/isUserAuth';
 import { Resolver, Query, Mutation, Arg, Ctx, UseMiddleware } from 'type-graphql';
 import { InvoicesEnum, PrismaClient } from '@prisma/client';
 import { GraphState } from '../dto/utils';
@@ -89,10 +89,15 @@ export class AccountMetaTraderResolver {
 			return progressInfo;
 		}   
 		try {
-
 			const accountFinish = await prisma.accountMetaTrader.create({ data:{
-				...data,
-				local:'default'
+				local:'default',
+				name:data.name,
+				password:data.password,
+				server:data.server,
+				balance:data.balance,
+				balanceCredit:data.balanceCredit,
+				accountNumber:data.accountNumber,
+				userId:data.userId,
 			} });
 
 			const convertValue = Number((await axios.get('https://economia.awesomeapi.com.br/last/USD-BRL')).data.high ?? 5.5) ;
@@ -216,7 +221,12 @@ export class AccountMetaTraderResolver {
 		
 		try {
 			
-			const verific = await prisma.accountMetaTrader.findFirst({where:{id:data.id}});
+			const verific = await prisma.accountMetaTrader.findFirst({where:{id:data.id},include:{invoices:{where:{NOT:{status:'PAID_OUT'}}}}});
+
+			if((verific?.invoices)?.length !== 0 ){
+				return { field: 'error', message: 'dasddsad' };
+			}			
+
 			if(verific?.status == 'PAY_TO_ACTIVATE' || verific?.status == 'PROCESS'){
 				return { field: 'error', message: 'There is an open invoice. To delete this account it needs to be paid.' };
 			}

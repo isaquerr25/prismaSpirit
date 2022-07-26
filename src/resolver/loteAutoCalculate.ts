@@ -1,6 +1,6 @@
 import { InputUpdateLoteAutoCalculate, InputDeleteLoteAutoCalculate, SendId } from './../dto/loteAutoCalculate';
 import { InputDeleteOrders, InputNewtOrders, InputUpdateOrders, ObjectOrders } from './../dto/orders';
-import { isUserAuth } from './../middleware/isUserAuth';
+import { isUserAuth } from '../middleware/isUserAuth';
 import { Resolver, Query, Mutation, Arg, Ctx, UseMiddleware } from 'type-graphql';
 import { InvoicesEnum, LoteAutoCalculateDangerEnum, PrismaClient } from '@prisma/client';
 import { GraphState } from '../dto/utils';

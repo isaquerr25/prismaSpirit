@@ -16,7 +16,6 @@ enum Role {
 }
 
 model User {
-
   id                Int                 @id @default(autoincrement())
   email             String              @unique
   name              String
@@ -57,7 +56,6 @@ enum AccountMetaTraderTypeEnum {
 }
 
 model AccountMetaTrader {
-
   id            Int                       @id @default(autoincrement())
   name          String
   password      String
@@ -123,7 +121,6 @@ enum InvoicesEnum {
 }
 
 model Invoices {
-
   id                  Int               @id @default(autoincrement())
   valueOrigin         Int               @default(0)
   valueDollar         Int
@@ -137,7 +134,7 @@ model Invoices {
   paymentDate         DateTime?
   updatedAt           DateTime          @updatedAt
   accountMetaTraderId Int
-  metaTraderRefr      AccountMetaTrader @relation("MetaTraderInvoices", fields: [accountMetaTraderId], references: [id])
+  metaTraderRefr      AccountMetaTrader @relation("MetaTraderInvoices", fields: [accountMetaTraderId], references: [id], onDelete: Cascade)
   paymentProof        PaymentProof[]
   PlanInvoices        PlanInvoices?     @relation(fields: [planInvoicesId], references: [id])
   planInvoicesId      Int?
@@ -214,7 +211,6 @@ enum styleEnum {
 }
 
 model LoteAutoCalculate {
-
   id         Int                         @id @default(autoincrement())
   minCapital Int
   maxCapital Int
@@ -253,7 +249,6 @@ enum PaymentAffilietedEnum {
 }
 
 model PaymentAffilieted {
-
   id                  Int          @id @default(autoincrement())
   valueDolar          Int
   valueReal           Int

@@ -1,5 +1,7 @@
+
 import { ObjectType, Field, InputType, Int } from 'type-graphql';
 import BigInt from 'graphql-bigint';
+import { ObjectAccountMetaTrader } from './accountMetaTrader';
 
 @ObjectType()
 export class UserAll {
@@ -111,4 +113,22 @@ export class InputUserBaseInfo {
 	@Field(() => String)
 		numberTelephone!: string;
 		
+}
+
+
+@ObjectType()
+export class UserAccountStaff {
+	@Field(() => Int)
+		id!: number;
+	@Field(() => String)
+		email!: string;
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	@Field(() => String, { nullable: true })
+		name?: string | null;
+	@Field(() => String, { nullable: true })
+		hashPayment?: string | null;
+	@Field(() => String, { nullable: true })
+		numberTelephone?: string | null;
+	@Field(() => [ObjectAccountMetaTrader], { nullable: true })
+		AccountMetaTrader?: ObjectAccountMetaTrader[] | null;
 }
