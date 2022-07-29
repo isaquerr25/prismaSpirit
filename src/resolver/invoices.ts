@@ -190,11 +190,11 @@ export class InvoicesResolver {
 		console.log('5> ' );
 		if(accountMTPrisma){	
 			const data = {
-				valueDollar: (res.accountNumber ?? 0) * (  Number(process.env.PROFIT_BUSINESS_PERCENTAGE)  /100 ),
-				valueReal: ((res.accountNumber ?? 0) * (  Number(process.env.PROFIT_BUSINESS_PERCENTAGE)  /100 ) / (resultPlanInvoicesPrisma != null ? resultPlanInvoicesPrisma!.realDollarQuote : 520)),
+				valueDollar: Math.trunc((res.accountNumber ?? 0) * (  Number(process.env.PROFIT_BUSINESS_PERCENTAGE)  /100 )),
+				valueReal:  Math.trunc((res.accountNumber ?? 0) * (  Number(process.env.PROFIT_BUSINESS_PERCENTAGE)  /100 ) / (resultPlanInvoicesPrisma != null ? resultPlanInvoicesPrisma!.realDollarQuote : 520)),
 				accountNumber: resultPlanInvoicesPrisma?.accountNumber,
-				dollarQuote: (resultPlanInvoicesPrisma != null ? resultPlanInvoicesPrisma!.realDollarQuote : 520),
-				percentProfit:(res.capital-(res.capital-res.profit))/res.capital,
+				dollarQuote:  Math.trunc(resultPlanInvoicesPrisma != null ? resultPlanInvoicesPrisma!.realDollarQuote : 520),
+				percentProfit: Math.trunc((res.capital-(res.capital-res.profit))/res.capital),
 				percentFess:Number(process.env.PROFIT_BUSINESS_PERCENTAGE),
 				status:InvoicesEnum.WAIT_PAYMENT,
 				paymenbeginDate: new Date(),

@@ -104,22 +104,5 @@ export class PlanInvoicesResolver {
 		return progressInfo;
 	}
 
-
-
-	@Query(() => [ObjectPlanInvoices], { nullable: true })
-	async planInvoiceLocalPython( @Arg('data') data: ObjectFilterAccountOrders)  {
-
-		const plan = await prisma.planInvoices.findMany({
-			where:{
-				refenceAccount:{every:{}}
-			},
-			include:{
-				
-				refenceAccount:true
-				
-			}
-		});
-		return plan;
-	}
 	
 }
