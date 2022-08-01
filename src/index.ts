@@ -42,7 +42,7 @@ const transporter = nodemailer.createTransport({
 
 	const corsOptions = {
 		origin: [
-			process.env.FRONT_IP,
+			process.env.FRONT_IP as string,
 			'http://185.227.110.67:7000',
 			'http://192.168.1.66:3000',
 			'http://192.168.1.66:3000/',
@@ -83,8 +83,7 @@ const transporter = nodemailer.createTransport({
 	app.use(graphqlUploadExpress());
 	server.applyMiddleware({ app, cors:corsOptions });
 	app.use('/graphql', function (req, res, next) {
-		console.log('dasdsd');
-		
+
 		next();
 	});
 
@@ -92,7 +91,7 @@ const transporter = nodemailer.createTransport({
 	app.get('/playground', expressPlayground({ endpoint: '/graphql' }));
 	
 	app.use('/graphql', async function (req, res, next) {
-		console.log('asdccccc');
+	
 		await prisma.log.create({
 			data:{
 				action:	String(	'req =>'+ req +	' res =>' + res	)
