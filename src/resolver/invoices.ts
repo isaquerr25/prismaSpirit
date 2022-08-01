@@ -17,7 +17,7 @@ export class InvoicesResolver {
 	@Query(() => [ObjectInvoices], { nullable: true })
 	async invoiceObjectsStaff() {
 		const value =  await prisma.invoices.findMany({include:{metaTraderRefr:true,paymentProof:true,PlanInvoices:true}});
-		console.log(value);
+
 		return value;
 	}
 
@@ -30,14 +30,14 @@ export class InvoicesResolver {
 				where: { id: data.id ?? 0 },
 				data: {...data}
 			});
-			console.log('invoiceObjectsStaffUpdate => ',value);
+	
 			return {
 				field: 'success',
 				message: 'alter invoice with success',
 			};
 		}
 		catch(error){
-			console.log('invoiceObjectsStaffUpdate => ', error);
+	
 			return {
 				field: 'error',
 				message: 'problem in alter this invoice',
@@ -49,7 +49,7 @@ export class InvoicesResolver {
 	@UseMiddleware(isUserAuth)
 	@Query(() => [ObjectInvoices], { nullable: true })
 	async invoiceObjects(@Ctx() ctx: any) {
-		console.log(getTokenId(ctx)?.userId);
+		
 		const value =  await prisma.invoices.findMany({
 			where:{
 				metaTraderRefr:{
@@ -65,7 +65,7 @@ export class InvoicesResolver {
 	@UseMiddleware(isUserAuth)
 	@Query(() => [ObjectInvoices], { nullable: true })
 	async invoiceObjectsOpen(@Ctx() ctx: any) {
-		console.log(getTokenId(ctx)?.userId);
+		
 		const value =  await prisma.invoices.findMany({
 			where:{
 				status:{notIn:['PAID_OUT']},

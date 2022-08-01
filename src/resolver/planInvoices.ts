@@ -18,7 +18,7 @@ export const prisma = new PrismaClient();
 export class PlanInvoicesResolver {
 
 	@UseMiddleware(isManagerAuth)
-	@Mutation(() => [GraphState])
+	@Mutation(() => GraphState)
 	async planInvoicesCreate(@Arg('data', () => InputNewPlanInvoices) 
 		data: InputNewPlanInvoices,
 		@Ctx() ctx: any	
@@ -31,42 +31,46 @@ export class PlanInvoicesResolver {
 		){
 
 			if(data.beginDate === undefined){
-				progressInfo.push({
+				return{
 					field: 'beginDate',
 					message: 'beginDate is empty',
-				});
+				};
 			}
 			if(data.finishDate === undefined){
-				progressInfo.push({
+				return{
 					field: 'finishDate',
 					message: 'finishDate is empty',
-				});
+				};
 			}
 			if(data.realDollarQuote === undefined){
-				progressInfo.push({
+				return{
 					field: 'realDollarQuote',
 					message: 'realDollarQuote is empty',
-				});
+				};
 			}
 			return progressInfo;
 		}   
 		try {
 
 			await prisma.planInvoices.create({ data });
-			progressInfo.push({
+			return{
 				field: 'create',
 				message: 'success',
-			});
+			};
 
 		} catch(error) {
 			console.log('bad :',error);
-			progressInfo.push({
+			return{
 				field: 'create',
 				message: 'error',
-			});
+			};
 
 		}
-		return progressInfo;
+		return{
+			field: 'create',
+			message: 'error',
+		};
+
 	}
 
 	@UseMiddleware(isManagerAuth)

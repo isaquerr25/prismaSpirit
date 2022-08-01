@@ -26,5 +26,27 @@ mutation{
   }
 }
 
+query {
+	planInvoicesAll{
+    id
+    beginDate
+    finishDate
+    realDollarQuote
+    createdAt
+    updatedAt
+    accountNumber
+    grossProfitDollar
+    profitDollar
+    affiliatedProfitDollar
+    type
+    status
+  }
+}
+
+
+
+
+
+
 
 

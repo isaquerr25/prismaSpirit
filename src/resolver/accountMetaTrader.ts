@@ -221,10 +221,23 @@ export class AccountMetaTraderResolver {
 		
 		try {
 			
-			const verific = await prisma.accountMetaTrader.findFirst({where:{id:data.id},include:{invoices:{where:{NOT:{status:'PAID_OUT'}}}}});
-
+			const verific = await prisma.accountMetaTrader.findFirst(
+				{
+					where:{
+						id:data.id
+					},
+					include:{
+						invoices:{
+							where:{
+								NOT:{OR:[{status:'PAID_OUT'},{type:'OPEN_ACCOUNT'}]}
+							}
+						}
+					}
+				}
+			);
+			console.log(verific?.invoices);
 			if((verific?.invoices)?.length !== 0 ){
-				return { field: 'error', message: 'dasddsad' };
+				return { field: 'error', message: 'Existe fatura em aberto, sua conta não pode ser deletada'};
 			}			
 
 			if(verific?.status == 'PAY_TO_ACTIVATE' || verific?.status == 'PROCESS'){

@@ -120,8 +120,8 @@ export class InputUserBaseInfo {
 export class UserAccountStaff {
 	@Field(() => Int)
 		id!: number;
-	@Field(() => String)
-		email!: string;
+	@Field(() => String, { nullable: true })
+		email!: string| null;
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	@Field(() => String, { nullable: true })
 		name?: string | null;

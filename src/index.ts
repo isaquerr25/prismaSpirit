@@ -1,3 +1,4 @@
+
 import 'reflect-metadata';
 import { InvoicesResolver } from './resolver/invoices';
 import { config } from 'dotenv';
@@ -8,7 +9,7 @@ import express from 'express';
 import cors from 'cors';
 import cookieParser = require('cookie-parser');
 import { ApolloServer,gql } from 'apollo-server-express';
-import { UserResolver } from './resolver/user';
+import { prisma, UserResolver } from './resolver/user';
 import { GraphQLUpload, graphqlUploadExpress} from 'graphql-upload';
 import { finished } from 'stream/promises';
 import serviceRoutine from './serviceRoutine/index';
@@ -69,7 +70,9 @@ const transporter = nodemailer.createTransport({
 
 	const server = new ApolloServer({
 		schema,
-		context: ({ req, res }: any) => ({ req, res }),
+		context: async ({ req, res }: any) => {
+			
+			return({ req, res });},
 	});
 	await server.start();
 	const app = express();
@@ -78,7 +81,25 @@ const transporter = nodemailer.createTransport({
 	app.use(routes);
 	app.use(graphqlUploadExpress());
 	server.applyMiddleware({ app, cors:corsOptions });
+	app.use('/graphql', function (req, res, next) {
+		console.log('dasdsd');
+		
+		next();
+	});
+
+	
 	app.get('/playground', expressPlayground({ endpoint: '/graphql' }));
+	
+	app.use('/graphql', async function (req, res, next) {
+		console.log('asdccccc');
+		await prisma.log.create({
+			data:{
+				action:	String(	'req =>'+ req +	' res =>' + res	)
+				
+			}
+		});
+		next();
+	});
 
 	app.listen(process.env.DOOR, () => {
 		console.log(`

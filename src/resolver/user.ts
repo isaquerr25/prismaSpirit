@@ -33,6 +33,7 @@ export class UserResolver {
 	@UseMiddleware(isManagerAuth)
 	@Query(() => [UserAccountStaff], { nullable: true })
 	async allUsersAccountStaff() {
+		console.log('ásso');
 		return await prisma.user.findMany({include:{AccountMetaTrader:true}});
 	}
 
@@ -107,6 +108,7 @@ export class UserResolver {
 
 
 		const haveEmail = await this.GetValidateEmail(data.email);
+		console.log('haveEmail =>',haveEmail);
 		
 		if (haveEmail) {
 			if(haveEmail?.confirm != 'Valid'){
@@ -141,7 +143,7 @@ export class UserResolver {
 				//password wrong
 				newValidateUser.push({
 					field: 'access',
-					message: 'email or password wrong',
+					message: 'email or password wrong v',
 				});
 			}
 		} else {
