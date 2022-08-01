@@ -42,9 +42,9 @@ const transporter = nodemailer.createTransport({
 
 	const corsOptions = {
 		origin: [
+			'https://api.spiritgoldforex.com/',
 			(process.env.FRONT_IP as string ),
 			'http://185.227.110.67:7000',
-			'https://api.spiritgoldforex.com/',
 			'https://api.spiritgoldforex.com',
 			'https://www.spiritgoldforex.com/',
 			'https://www.spiritgoldforex.com',
