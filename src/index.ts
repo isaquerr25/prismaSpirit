@@ -44,6 +44,8 @@ const transporter = nodemailer.createTransport({
 		origin: [
 			(process.env.FRONT_IP as string +'/'),
 			'http://185.227.110.67:7000',
+			'https://www.spiritgoldforex.com/',
+			'https://www.spiritgoldforex.com',
 			'http://192.168.1.66:3000',
 			'http://192.168.1.66:3000/',
 			'http://localhost:3000',
