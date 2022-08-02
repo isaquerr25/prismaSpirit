@@ -102,7 +102,10 @@ export class InvoicesResolver {
 	async invoiceObjectSingleRequest( @Arg('data', () => PassToken) data: PassToken,@Ctx() ctx: any) {
 		const value =  await prisma.invoices.findFirst({
 			where:{
-				id:Number(data.token)
+				id:Number(data.token),
+				metaTraderRefr:{
+					userId:getTokenId(ctx)?.userId
+				}
 			},
 			include:{metaTraderRefr:true}
 		});
@@ -116,7 +119,7 @@ export class InvoicesResolver {
 	}
 
 
-	@UseMiddleware(isUserAuth)
+	@UseMiddleware(isManagerAuth)
 	@Mutation(() => [GraphState])
 	async invoiceCreate(@Arg('res', () => [InputNewInvoices]) 
 		res: [InputNewInvoices],
