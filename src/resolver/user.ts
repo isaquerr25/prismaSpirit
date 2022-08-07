@@ -115,7 +115,7 @@ export class UserResolver {
 				emailValidSend(haveEmail);
 				newValidateUser.push({
 					field: 'access',
-					message: 'email sent to confirm an account',
+					message: 'Um email foi enviado para validar a conta',
 				});
 			
 				return newValidateUser;

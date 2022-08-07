@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer';
 import { createAuthToken, createWithdrawToken } from '../utils';
 import { UserAll } from '../dto/user';
 import sgMail from '@sendgrid/mail';
+import { emailCool } from './emailStyle';
 
 const  emailValidSend = async(user:any) =>{
 
@@ -14,7 +15,7 @@ const  emailValidSend = async(user:any) =>{
 		from: process.env.SENDGRID_API_EMAIL!, // Change to your verified sender
 		subject: 'Confirm Email',
 		text: 'Confirm',
-		html: `Please click this link to confirm your email: <a href="${url}">${url}</a>`,
+		html: emailCool(url),
 	};
 	sgMail
 		.send(msg)
