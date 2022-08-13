@@ -1,6 +1,7 @@
+
 import { isUserAuth } from '../middleware/isUserAuth';
 import { Resolver, Query, Mutation, Arg, Ctx, UseMiddleware } from 'type-graphql';
-import { InvoicesEnum, PrismaClient } from '@prisma/client';
+import { InvoicesEnum, PrismaClient, AccountMetaTrader } from '@prisma/client';
 import { GraphState } from '../dto/utils';
 import { 
 	InputChangeAccountMetaTrader, 
@@ -11,6 +12,7 @@ import { InputNewInvoices, ObjectInvoices } from '../dto/invoices';
 import { InputNewPlanInvoices, InputUpdatePlanInvoices, ObjectPlanInvoices } from '../dto/planInvoices';
 import { isManagerAuth } from '../middleware/isManagerAuth';
 import { ObjectFilterAccountOrders } from '../dto/orders';
+import { ObjectPlanToAccount } from '../dto/planToAccount';
 export const prisma = new PrismaClient();
 
 
@@ -23,7 +25,13 @@ export class PlanInvoicesResolver {
 		data: InputNewPlanInvoices,
 		@Ctx() ctx: any	
 	) {
-		
+
+		const beginMoth = new Date();
+		beginMoth.setHours(0);
+		beginMoth.setMinutes(0);
+		beginMoth.setSeconds(0);
+		beginMoth.setDate(1);
+
 		const progressInfo = [{}];
 		if( data.beginDate === undefined || 
 			data.finishDate === undefined || 
@@ -52,7 +60,43 @@ export class PlanInvoicesResolver {
 		}   
 		try {
 
-			await prisma.planInvoices.create({ data });
+			
+			const accountTo = await prisma.accountMetaTrader.findMany({
+				where:{
+					local:{
+						hasSome:[data.local]
+					},
+					invoices:{
+						none:{
+							createdAt:{
+								gte:beginMoth
+							}
+						}
+					}
+				}
+			});
+
+			if(accountTo.length === 0){
+				progressInfo.push({
+					field: 'already have invoice to moth',
+					message: 'error',
+				});
+				return progressInfo;
+			}
+
+			const plan = await prisma.planInvoices.create({ data });
+		
+			const resultMap = accountTo.map((item) =>{
+				return {
+					accountMetaTraderId:item.id,
+					planInvoicesId:plan.id,
+				};
+			});
+
+			await prisma.planToAccount.createMany(
+				{ data:resultMap}
+			);
+			
 			progressInfo.push({
 				field: 'create',
 				message: 'success',
@@ -106,20 +150,46 @@ export class PlanInvoicesResolver {
 
 
 
-	@Query(() => [ObjectPlanInvoices], { nullable: true })
+	@Query(() => [ObjectPlanToAccount], { nullable: true })
 	async planInvoiceLocalPython( @Arg('data') data: ObjectFilterAccountOrders)  {
 
-		const plan = await prisma.planInvoices.findMany({
+		const yesterday = new Date();
+		yesterday.setHours(0);
+		yesterday.setMinutes(0);
+		yesterday.setSeconds(0);
+		
+		const finishDay = new Date();
+		finishDay.setHours(23);
+		finishDay.setMinutes(59);
+		finishDay.setSeconds(59);
+
+		const beginMoth = new Date();
+		beginMoth.setHours(0);
+		beginMoth.setMinutes(0);
+		beginMoth.setSeconds(0);
+		beginMoth.setDate(1);
+
+		return await prisma.planToAccount.findMany({
 			where:{
-				refenceAccount:{every:{}}
+				createdAt: {gte:yesterday,lte:finishDay},
+				AccountMetaTrader:{
+					is:{
+						invoices:{
+							none:{
+								createdAt:{
+
+									gte:beginMoth
+								}
+							}
+						}
+					}
+				}
 			},
 			include:{
-				
-				refenceAccount:true
-				
+				AccountMetaTrader:true,
+				PlanInvoices:true
 			}
 		});
-		return plan;
 	}
 	
 }

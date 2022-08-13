@@ -74,7 +74,17 @@ model AccountMetaTrader {
   typeAccount   AccountMetaTraderTypeEnum @default(GUEST)
   local         String[]
   accountType   accountTypeEnum           @default(NORMAL)
-  PlanInvoices  PlanInvoices[]
+  PlanToAccount PlanToAccount[]
+}
+
+model PlanToAccount {
+  PlanInvoices        PlanInvoices      @relation(fields: [planInvoicesId], references: [id])
+  planInvoicesId      Int // relation scalar field (used in the `@relation` attribute above)
+  AccountMetaTrader   AccountMetaTrader @relation(fields: [accountMetaTraderId], references: [id])
+  accountMetaTraderId Int // relation scalar field (used in the `@relation` attribute above)
+  createdAt           DateTime          @default(now())
+
+  @@id([planInvoicesId, accountMetaTraderId])
 }
 
 enum accountTypeEnum {
@@ -108,7 +118,8 @@ model PlanInvoices {
   status                 PlanInvoicesStatusEnum @default(OPEN)
   createdAt              DateTime               @default(now())
   updatedAt              DateTime               @updatedAt
-  refenceAccount         AccountMetaTrader[]
+  PlanToAccount          PlanToAccount[]
+  local                  String                 @default("default")
 }
 
 enum InvoicesEnum {
@@ -118,6 +129,12 @@ enum InvoicesEnum {
   PROCESS
   PAID_OUT
   CANCEL
+}
+
+enum InvoicesTypeEnum {
+  FINISH_ACCOUNT
+  OPEN_ACCOUNT
+  COMMON
 }
 
 model Invoices {
@@ -139,6 +156,7 @@ model Invoices {
   PlanInvoices        PlanInvoices?     @relation(fields: [planInvoicesId], references: [id])
   planInvoicesId      Int?
   expirationDate      DateTime?
+  type                InvoicesTypeEnum  @default(COMMON)
 }
 
 enum OrdersStatusEnum {
@@ -261,4 +279,10 @@ model PaymentAffilieted {
   accountMetaTraderId Int
   refUser             User         @relation(fields: [userId], references: [id])
   userId              Int
+}
+
+model Log {
+  id        Int      @id @default(autoincrement())
+  action    String
+  createdAt DateTime @default(now())
 }

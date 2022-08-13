@@ -4,6 +4,7 @@ mutation{
     finishDate:"2020/05/31"
     realDollarQuote:520
     type:ALL
+    local:"pato"
   }){
     field
     message
@@ -28,3 +29,30 @@ mutation{
 
 
 
+query {
+  planInvoiceLocalPython(
+		data: {
+      local:"pato"
+    }){
+    PlanInvoices{
+      id
+      beginDate
+      finishDate
+      realDollarQuote
+      local
+      status
+      type
+      grossProfitDollar
+      createdAt
+      
+    }
+    AccountMetaTrader{
+      id
+      name
+      password
+      accountNumber
+      server
+      
+    }
+  }
+}

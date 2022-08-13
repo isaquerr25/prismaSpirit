@@ -1,5 +1,6 @@
-import { AccountMetaTraderEnum, OrdersDirectionEnum, OrdersTypeEnum, OrdersStatusEnum, AccountMetaTrader } from '@prisma/client';
+import { AccountMetaTraderEnum, OrdersDirectionEnum, OrdersTypeEnum, OrdersStatusEnum, AccountMetaTrader, PlanInvoicesTypeEnum, PlanInvoicesStatusEnum, AccountMetaTraderTypeEnum, accountTypeEnum } from '@prisma/client';
 import { ObjectType, Field, InputType, Int, registerEnumType} from 'type-graphql';
+
 import { UserHaveComponents } from './user';
 
 @ObjectType()
@@ -23,44 +24,48 @@ export class ObjectAccountMetaTrader  {
 
 
 @ObjectType()
-export class ObjectAccountFilterShort  {
-	@Field(() => [ObjectAccountFilterShort], { nullable: true })
-		id?: ObjectAccountFilterShort[];
-}
+export class ObjectAccountFilterAccount implements AccountMetaTrader{
+	createdAt!: Date;
+	updatedAt!: Date;
+	userId!: number;
+	accountType!: accountTypeEnum;
 
-
-@ObjectType()
-export class ObjectAccountFilterAccount  {
 	@Field(() => Int, { nullable: true })
-		id?: number;
+		id!: number ;
 	@Field(() => Date, { nullable: true })
-		finishDate?: Date;
+		finishDate!: Date;
 	@Field(() => String, { nullable: true })
-		name?: string;
+		name!: string;
 	@Field(() => String, { nullable: true })
-		password?: string;
+		password!: string;
 	@Field(() => String, { nullable: true })
-		server?: string;
+		server!: string;
 	@Field(() => Int, { nullable: true })
-		balance?: number;
+		balance!: number;
 	@Field(() => Int, { nullable: true })
-		balanceCredit?: number;
+		balanceCredit!: number;
 	@Field(() => Int, { nullable: true })
-		accountNumber?: number;
+		accountNumber!: number;
 	@Field(() => String, { nullable: true })
-		status?: string;
+		status!: AccountMetaTraderEnum;
 	@Field(() => String, { nullable: true })
-		typeAccount?: string;
+		typeAccount!: AccountMetaTraderTypeEnum;
 	@Field(() => Int, { nullable: true })
 		allCurrent?: number;
 	@Field(() => Int, { nullable: true })
 		allCopyCurrent?: number;
 	@Field(() => [String], { nullable: true })
-		local?: string[];
+		local!: string[];
 	@Field(() => [ObjectGroupSimpleOrder], { nullable: true })
 		missingOrders?: ObjectGroupSimpleOrder[] | null;
 }
 
+
+@ObjectType()
+export class ObjectAccountFilterShort  {
+	@Field(() => [ObjectAccountFilterShort], { nullable: true })
+		id?: ObjectAccountFilterShort[];
+}
 
 
 @ObjectType()
