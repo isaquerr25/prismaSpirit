@@ -1,7 +1,7 @@
 
 import { isUserAuth } from '../middleware/isUserAuth';
 import { Resolver, Query, Mutation, Arg, Ctx, UseMiddleware } from 'type-graphql';
-import { InvoicesEnum, PrismaClient, AccountMetaTrader } from '@prisma/client';
+import { InvoicesEnum, PrismaClient, AccountMetaTrader, PlanInvoices } from '@prisma/client';
 import { GraphState } from '../dto/utils';
 import { 
 	InputChangeAccountMetaTrader, 
@@ -171,18 +171,10 @@ export class PlanInvoicesResolver {
 
 		return await prisma.planToAccount.findMany({
 			where:{
+				status:'OPEN',
 				createdAt: {gte:yesterday,lte:finishDay},
-				AccountMetaTrader:{
-					is:{
-						invoices:{
-							none:{
-								createdAt:{
-
-									gte:beginMoth
-								}
-							}
-						}
-					}
+				PlanInvoices:{
+					local:{in :data.local}
 				}
 			},
 			include:{

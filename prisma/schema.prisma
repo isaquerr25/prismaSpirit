@@ -77,14 +77,19 @@ model AccountMetaTrader {
   PlanToAccount PlanToAccount[]
 }
 
-model PlanToAccount {
-  PlanInvoices        PlanInvoices      @relation(fields: [planInvoicesId], references: [id])
-  planInvoicesId      Int // relation scalar field (used in the `@relation` attribute above)
-  AccountMetaTrader   AccountMetaTrader @relation(fields: [accountMetaTraderId], references: [id])
-  accountMetaTraderId Int // relation scalar field (used in the `@relation` attribute above)
-  createdAt           DateTime          @default(now())
+enum PlanToAccountStatusEnum {
+  OPEN
+  COMPLETE
+}
 
-  @@id([planInvoicesId, accountMetaTraderId])
+model PlanToAccount {
+  id                  Int                     @id @default(autoincrement())
+  PlanInvoices        PlanInvoices            @relation(fields: [planInvoicesId], references: [id])
+  planInvoicesId      Int // relation scalar field (used in the `@relation` attribute above)
+  AccountMetaTrader   AccountMetaTrader       @relation(fields: [accountMetaTraderId], references: [id])
+  accountMetaTraderId Int // relation scalar field (used in the `@relation` attribute above)
+  createdAt           DateTime                @default(now())
+  status              PlanToAccountStatusEnum @default(OPEN)
 }
 
 enum accountTypeEnum {
