@@ -176,7 +176,6 @@ export class InvoicesResolver {
 		return progressInfo;
 	}
 	
-	@UseMiddleware(isManagerAuth)
 	@Mutation(() => GraphState)
 	async invoiceCreateStaff(@Arg('res', () => InputNewInvoices) 
 		res: InputNewInvoices,
