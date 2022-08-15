@@ -32,6 +32,8 @@ registerEnumType(InvoicesEnum, {
 
 @InputType()
 export class InputNewInvoices {
+
+	@Field(() => Int, { nullable: true }) idPlanToAccount!: number; 
 	@Field(() => Int, { nullable: true }) accountNumber?: number; 
 	@Field(() => Int) profit!: number; 
 	@Field(() => Int) capital!: number;

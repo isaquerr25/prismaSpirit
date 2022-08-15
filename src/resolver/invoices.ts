@@ -2,7 +2,7 @@ import { InputObjectInvoicesStaff } from './../dto/invoices';
 import { isManagerAuth } from './../middleware/isManagerAuth';
 import { isUserAuth } from '../middleware/isUserAuth';
 import { Resolver, Query, Mutation, Arg, Ctx, UseMiddleware } from 'type-graphql';
-import { accountTypeEnum, InvoicesEnum, PrismaClient, AccountMetaTrader } from '@prisma/client';
+import { accountTypeEnum, InvoicesEnum, PrismaClient, AccountMetaTrader, PlanToAccount } from '@prisma/client';
 import { GraphState, PassToken } from '../dto/utils';
 import { InputChangeAccountMetaTrader, InputDeleteAccountMetaTrader, InputNewAccountMetaTrader, InputStopWorkAccountMetaTrader, ObjectAccountMetaTrader } from '../dto/accountMetaTrader';
 import { getTokenId } from '../utils';
@@ -123,14 +123,15 @@ export class InvoicesResolver {
 		@Ctx() ctx: any	
 	) {
 		const progressInfo = [{}];
-		const resultPlanInvoicesPrisma =  await prisma.planInvoices.findFirst({where:{id:res[0].planInvoicesId}});
 		for(const account of res){
-
+			const resultPlanInvoicesPrisma =  await prisma.planInvoices.findFirst({where:{id:account.planInvoicesId}});
 			const accountMTPrisma =  await prisma.accountMetaTrader.findFirst({where:{accountNumber:account.accountNumber}});
+			console.log('percentProfit=> ',account.capital);
+			console.log('percentProfit=> ',(account.capital-(account.capital-account.profit))/account.capital);
 			if(accountMTPrisma){	
 				const data = {
-					valueDollar: (account.accountNumber ?? 0) * (  Number(process.env.PROFIT_BUSINESS_PERCENTAGE)  /100 ),
-					valueReal: ((account.accountNumber ?? 0) * (  Number(process.env.PROFIT_BUSINESS_PERCENTAGE)  /100 ) / resultPlanInvoicesPrisma!.realDollarQuote),
+					valueDollar: (account.profit ?? 0) * (  Number(process.env.PROFIT_BUSINESS_PERCENTAGE)  /100 ),
+					valueReal: ((account.profit ?? 0) * (  Number(process.env.PROFIT_BUSINESS_PERCENTAGE)  /100 ) / resultPlanInvoicesPrisma!.realDollarQuote),
 					accountNumber: resultPlanInvoicesPrisma?.accountNumber,
 					dollarQuote: resultPlanInvoicesPrisma!.realDollarQuote,
 					percentProfit:(account.capital-(account.capital-account.profit))/account.capital,
@@ -142,6 +143,15 @@ export class InvoicesResolver {
 				}; 
 				try {
 					await prisma.invoices.create({data});
+					
+					await prisma.planInvoices.update({
+						where:{
+							id:account.idPlanToAccount
+						},
+						data:{
+							status:'COMPLETE'
+						}
+					});
 
 					progressInfo.push({
 						field: 'account '+ account.accountNumber,
@@ -173,6 +183,19 @@ export class InvoicesResolver {
 		@Ctx() ctx: any	
 	) {
 		console.log('1> ' );
+		const toPlan = await prisma.planToAccount.findUnique({where:{id:res.idPlanToAccount}});
+		if (!toPlan){
+			return{
+				field: 'error',
+				message: 'do not have this plan',
+			};
+		}
+		if( toPlan.status == 'COMPLETE'  ){
+			return{
+				field: 'error',
+				message: 'this plan alright complete',
+			};
+		}
 		let resultPlanInvoicesPrisma:any = null;
 		try {
 
@@ -188,13 +211,15 @@ export class InvoicesResolver {
 		console.log('3> ' );
 		console.log(resultPlanInvoicesPrisma != null ? resultPlanInvoicesPrisma!.realDollarQuote : 'asds');
 		console.log('5> ' );
+		console.log('percentProfit=> ',res.capital);
+		console.log('percentProfit=> ',Math.ceil(( (res.capital-(res.capital-res.profit))/res.capital)*100*100));
+			
 		if(accountMTPrisma){	
 			const data = {
-				valueDollar: (res.accountNumber ?? 0) * (  Number(process.env.PROFIT_BUSINESS_PERCENTAGE)  /100 ),
-				valueReal: ((res.accountNumber ?? 0) * (  Number(process.env.PROFIT_BUSINESS_PERCENTAGE)  /100 ) / (resultPlanInvoicesPrisma != null ? resultPlanInvoicesPrisma!.realDollarQuote : 520)),
-				accountNumber: resultPlanInvoicesPrisma?.accountNumber,
-				dollarQuote: (resultPlanInvoicesPrisma != null ? resultPlanInvoicesPrisma!.realDollarQuote : 520),
-				percentProfit:(res.capital-(res.capital-res.profit))/res.capital,
+				valueDollar: (res.profit ?? 0) * (  Number(process.env.PROFIT_BUSINESS_PERCENTAGE)  /100 )*100,
+				valueReal: Math.ceil((res.profit ?? 0) * (  Number(process.env.PROFIT_BUSINESS_PERCENTAGE)  /100 ) * (resultPlanInvoicesPrisma?.realDollarQuote ? resultPlanInvoicesPrisma.realDollarQuote : 520)),
+				dollarQuote: (resultPlanInvoicesPrisma?.realDollarQuote ? resultPlanInvoicesPrisma.realDollarQuote : 520),
+				percentProfit:Math.ceil(( (res.capital-(res.capital-res.profit))/res.capital)*100*100),
 				percentFess:Number(process.env.PROFIT_BUSINESS_PERCENTAGE),
 				status:InvoicesEnum.WAIT_PAYMENT,
 				paymenbeginDate: new Date(),
@@ -203,6 +228,15 @@ export class InvoicesResolver {
 			}; 
 			try {
 				await prisma.invoices.create({data});
+				
+				await prisma.planToAccount.update({
+					where:{
+						id:res.idPlanToAccount
+					},
+					data:{
+						status:'COMPLETE'
+					}
+				});
 
 				return{
 					field: 'success',
