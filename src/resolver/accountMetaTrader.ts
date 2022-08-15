@@ -259,7 +259,7 @@ export class AccountMetaTraderResolver {
 		}
 	}
 
-	@UseMiddleware(isUserAuth)
+
 	@Query(() => [ObjectAccountFilterAccount], { nullable: true })
 	async ordersFilterAccount( @Arg('data') data: ObjectFilterAccountOrders) {
 		
