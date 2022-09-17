@@ -54,6 +54,7 @@ const transporter = nodemailer.createTransport({
 			'http://localhost:3000/',
 			'http://localhost:4000/',
 			'http://localhost:4000/graphql/',
+			'http://192.168.1.223:3000',
 			'http://192.168.1.223:3000/',
 			'http://192.168.1.223:3000/graphql/',
 		],
