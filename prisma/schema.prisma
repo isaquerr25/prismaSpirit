@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://tempest:vXtbfrlsDSzneWFheo0F@185.227.110.67:15432/spirit"
+  url      =  env("DATABASE_URL")
 }
 
 enum Role {
@@ -274,4 +274,24 @@ model Log {
   id        Int      @id @default(autoincrement())
   action    String
   createdAt DateTime @default(now())
+}
+
+
+model Lied {
+  id                Int                 @id @default(autoincrement())
+  email             String              @unique
+  name              String
+  birth             DateTime?  
+  originLead        String?  
+  sex               String? 
+  address           String?  
+  cep               String?
+  salaryYear        Int?  
+  city              String?
+  country           String?  
+  statusLead        String?  
+  phone             String?
+  maritalStatus     String?  
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
 }

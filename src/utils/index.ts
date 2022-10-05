@@ -36,7 +36,7 @@ export const validatePassword = (password: string) => {
 	);
 };
 
-const validateEmail = (value: string) => {
+export const validateEmail = (value: string) => {
 	return String(value)
 		.toLowerCase()
 		.match(

@@ -22,6 +22,7 @@ import { OrdersResolver } from './resolver/orders';
 import { LoteAutoCalculateResolver } from './resolver/loteAutoCalculate';
 import { OrdersAccountResolver } from './resolver/ordersAccount';
 import { DocumentPictureResolver } from './resolver/upload';
+import { LiedResolver } from './resolver/lied';
 const v1 = express.Router();
 
 /* -------------------------------------------------------------------------- */
@@ -73,6 +74,7 @@ const transporter = nodemailer.createTransport({
 			LoteAutoCalculateResolver,
 			OrdersAccountResolver,
 			DocumentPictureResolver,
+			LiedResolver
 		], 
 	});
 

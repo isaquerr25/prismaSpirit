@@ -1,0 +1,12 @@
+mutation{
+  liedCreate(
+    data:{
+      email:"sadadassdas@das.ds",
+      name: "ddasd",
+      originLead: "facebook"
+    }
+  ){
+    field
+    message
+  }
+}
